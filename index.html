@@ -3,18 +3,19 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <meta name="theme-color" content="#1a1a2e" />
-  <title>Museum Entry Pass</title>
+  <meta name="theme-color" content="#0a0a0a" />
+  <title>Equall Museum · Entry Pass</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg: #0f0f1a;
-      --surface: #1a1a2e;
-      --surface2: #16213e;
-      --accent: #e0a832;
-      --text: #f0f0f5;
-      --text-muted: #8888aa;
+      --bg: #0a0a0a;
+      --surface: #161616;
+      --surface2: #1f1f1f;
+      --accent: #990000;
+      --accent-dark: #6b0000;
+      --text: #ffffff;
+      --text-muted: #888888;
       --radius: 16px;
     }
 
@@ -27,31 +28,30 @@
       flex-direction: column;
       align-items: center;
       justify-content: flex-start;
-      padding: 0 0 40px;
+      padding: 0 0 48px;
     }
 
     /* ─── Header ─────────────────────────────────────────── */
     .header {
       width: 100%;
-      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-      padding: 28px 24px 24px;
+      background: #0a0a0a;
+      padding: 20px 24px 16px;
       text-align: center;
-      border-bottom: 1px solid #ffffff12;
+      border-bottom: 1px solid #ffffff0f;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
     }
-    .header .museum-logo {
-      font-size: 36px;
-      margin-bottom: 8px;
-    }
-    .header h1 {
-      font-size: 22px;
-      font-weight: 700;
-      letter-spacing: 0.5px;
-      color: var(--accent);
+    .header img.logo {
+      width: 96px;
+      height: 96px;
+      object-fit: contain;
     }
     .header p {
-      font-size: 13px;
+      font-size: 12px;
       color: var(--text-muted);
-      margin-top: 4px;
+      letter-spacing: 0.6px;
     }
 
     /* ─── Screens ─────────────────────────────────────────── */
@@ -59,7 +59,6 @@
       display: none;
       width: 100%;
       max-width: 480px;
-      padding: 28px 20px;
       flex-direction: column;
       align-items: center;
       gap: 20px;
@@ -68,47 +67,92 @@
     .screen.active { display: flex; }
 
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(12px); }
+      from { opacity: 0; transform: translateY(10px); }
       to   { opacity: 1; transform: translateY(0); }
     }
 
-    /* ─── Welcome screen ──────────────────────────────────── */
-    .welcome-icon {
-      font-size: 64px;
-      margin-top: 8px;
+    /* ─── Welcome hero ────────────────────────────────────── */
+    .hero {
+      width: 100%;
+      position: relative;
+      height: 220px;
+      overflow: hidden;
     }
-    .welcome-title {
-      font-size: 26px;
-      font-weight: 700;
+    .hero img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center 30%;
+      filter: brightness(0.55);
+    }
+    .hero-text {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 0 24px;
+    }
+    .hero-text h2 {
+      font-size: 24px;
+      font-weight: 800;
       text-align: center;
-      line-height: 1.3;
+      line-height: 1.2;
+      letter-spacing: 0.3px;
+      color: #fff;
+    }
+    .hero-text span {
+      font-size: 12px;
+      color: var(--accent);
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    .welcome-body {
+      width: 100%;
+      padding: 0 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      align-items: center;
     }
     .welcome-sub {
       font-size: 15px;
       color: var(--text-muted);
       text-align: center;
-      line-height: 1.6;
+      line-height: 1.65;
     }
 
     /* ─── Form ────────────────────────────────────────────── */
+    .form-wrap {
+      width: 100%;
+      padding: 0 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      align-items: center;
+    }
     .form-group {
       width: 100%;
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 7px;
     }
     .form-group label {
-      font-size: 13px;
-      font-weight: 600;
+      font-size: 11px;
+      font-weight: 700;
       color: var(--text-muted);
       text-transform: uppercase;
-      letter-spacing: 0.8px;
+      letter-spacing: 1px;
     }
-    .form-group input, .form-group select {
+    .form-group input {
       width: 100%;
       padding: 14px 16px;
       background: var(--surface);
-      border: 1px solid #ffffff18;
+      border: 1px solid #ffffff12;
       border-radius: var(--radius);
       color: var(--text);
       font-size: 16px;
@@ -116,62 +160,59 @@
       transition: border-color 0.2s;
       -webkit-appearance: none;
     }
-    .form-group input:focus, .form-group select:focus {
-      border-color: var(--accent);
-    }
-    .form-group select option { background: var(--surface); }
+    .form-group input:focus { border-color: var(--accent); }
 
     /* ─── Choice cards ────────────────────────────────────── */
     .choice-label {
-      font-size: 17px;
-      font-weight: 600;
-      text-align: center;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
       color: var(--text-muted);
+      align-self: flex-start;
     }
-
     .choices {
       width: 100%;
       display: flex;
       flex-direction: column;
-      gap: 14px;
+      gap: 12px;
     }
-
     .choice-card {
       width: 100%;
       background: var(--surface);
-      border: 2px solid #ffffff15;
+      border: 1.5px solid #ffffff10;
       border-radius: var(--radius);
-      padding: 18px 18px;
+      padding: 16px 18px;
       display: flex;
       align-items: center;
       gap: 16px;
       cursor: pointer;
-      transition: border-color 0.2s, transform 0.15s, background 0.2s;
+      transition: border-color 0.2s, background 0.2s, transform 0.15s;
       user-select: none;
       -webkit-tap-highlight-color: transparent;
     }
-    .choice-card:active { transform: scale(0.98); }
+    .choice-card:active { transform: scale(0.985); }
     .choice-card.selected { background: var(--surface2); }
 
     .choice-dot {
-      width: 28px;
-      height: 28px;
+      width: 26px;
+      height: 26px;
       border-radius: 50%;
       flex-shrink: 0;
-      border: 3px solid #ffffff30;
     }
-    .choice-dot.red   { background: #e63946; border-color: #e63946; box-shadow: 0 0 10px #e6394660; }
-    .choice-dot.green { background: #2dc653; border-color: #2dc653; box-shadow: 0 0 10px #2dc65360; }
-    .choice-dot.blue  { background: #4895ef; border-color: #4895ef; box-shadow: 0 0 10px #4895ef60; }
+    /* All three colors remain red/green/blue for the ticket pass logic */
+    .choice-dot.red   { background: #990000; box-shadow: 0 0 10px #99000070; }
+    .choice-dot.green { background: #2dc653; box-shadow: 0 0 10px #2dc65370; }
+    .choice-dot.blue  { background: #4895ef; box-shadow: 0 0 10px #4895ef70; }
 
-    .card-red   { border-color: #e6394640; }
-    .card-green { border-color: #2dc65340; }
-    .card-blue  { border-color: #4895ef40; }
-    .card-red.selected   { border-color: #e63946; }
+    .card-red   { border-color: #99000030; }
+    .card-green { border-color: #2dc65330; }
+    .card-blue  { border-color: #4895ef30; }
+    .card-red.selected   { border-color: #990000; }
     .card-green.selected { border-color: #2dc653; }
     .card-blue.selected  { border-color: #4895ef; }
 
-    .choice-text h3 { font-size: 15px; font-weight: 600; margin-bottom: 2px; }
+    .choice-text h3 { font-size: 15px; font-weight: 600; margin-bottom: 2px; color: #fff; }
     .choice-text p  { font-size: 12px; color: var(--text-muted); line-height: 1.4; }
 
     /* ─── Buttons ─────────────────────────────────────────── */
@@ -188,51 +229,52 @@
       -webkit-tap-highlight-color: transparent;
     }
     .btn:active { transform: scale(0.98); }
-    .btn:disabled { opacity: 0.35; cursor: not-allowed; }
-    .btn-primary { background: var(--accent); color: #111; }
+    .btn:disabled { opacity: 0.3; cursor: not-allowed; }
+    .btn-primary { background: var(--accent); color: #fff; }
+    .btn-primary:not(:disabled):hover { background: var(--accent-dark); }
     .btn-ghost {
       background: transparent;
-      border: 1px solid #ffffff20;
+      border: 1px solid #ffffff18;
       color: var(--text-muted);
       font-size: 14px;
     }
 
-    /* ─── Ticket screen ───────────────────────────────────── */
+    /* ─── Ticket ──────────────────────────────────────────── */
     .ticket-wrapper {
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 24px;
+      gap: 22px;
       width: 100%;
+      padding: 0 20px;
     }
 
     .ticket-card {
       width: 100%;
       max-width: 340px;
-      border-radius: 24px;
+      border-radius: 22px;
       overflow: hidden;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+      box-shadow: 0 24px 64px rgba(0,0,0,0.6);
     }
 
     .ticket-top {
-      padding: 22px 22px 18px;
+      padding: 18px 20px 14px;
       display: flex;
       align-items: center;
       justify-content: space-between;
     }
-    .ticket-top .museum-name {
-      font-size: 13px;
-      font-weight: 700;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      opacity: 0.85;
+    .ticket-top img.ticket-logo {
+      width: 48px;
+      height: 48px;
+      object-fit: contain;
     }
-    .ticket-top .ticket-type-badge {
-      font-size: 11px;
+    .ticket-type-badge {
+      font-size: 10px;
       font-weight: 700;
       letter-spacing: 1px;
       text-transform: uppercase;
       background: rgba(0,0,0,0.25);
+      color: #fff;
       padding: 4px 10px;
       border-radius: 20px;
     }
@@ -241,39 +283,38 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      padding: 10px 22px;
+      padding: 8px 22px 46px;
     }
-
     .color-square {
-      width: 200px;
-      height: 200px;
-      border-radius: 20px;
-      box-shadow: 0 0 40px var(--sq-glow, rgba(255,255,255,0.3));
+      width: 190px;
+      height: 190px;
+      border-radius: 18px;
       position: relative;
       display: flex;
       align-items: center;
       justify-content: center;
+      box-shadow: 0 0 50px var(--sq-glow, rgba(255,255,255,0.2));
     }
     .color-square::after {
       content: '';
       position: absolute;
       inset: 0;
-      border-radius: 20px;
-      background: linear-gradient(135deg, rgba(255,255,255,0.18) 0%, transparent 60%);
+      border-radius: 18px;
+      background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, transparent 55%);
     }
     .color-square .scan-hint {
       position: absolute;
-      bottom: -32px;
+      bottom: -30px;
       font-size: 11px;
-      color: rgba(255,255,255,0.5);
-      letter-spacing: 0.5px;
+      color: rgba(255,255,255,0.45);
+      letter-spacing: 0.4px;
       white-space: nowrap;
     }
 
     .ticket-divider {
-      margin: 8px 0;
       height: 1px;
       background: rgba(0,0,0,0.2);
+      margin: 0 0 2px;
       position: relative;
     }
     .ticket-divider::before,
@@ -281,8 +322,7 @@
       content: '';
       position: absolute;
       top: -10px;
-      width: 20px;
-      height: 20px;
+      width: 20px; height: 20px;
       border-radius: 50%;
       background: var(--bg);
     }
@@ -290,46 +330,45 @@
     .ticket-divider::after  { right: -10px; }
 
     .ticket-bottom {
-      padding: 18px 22px 22px;
+      padding: 16px 20px 20px;
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 12px;
     }
     .ticket-field label {
       display: block;
-      font-size: 10px;
+      font-size: 9px;
       font-weight: 700;
-      letter-spacing: 0.8px;
+      letter-spacing: 1px;
       text-transform: uppercase;
-      opacity: 0.6;
+      opacity: 0.55;
       margin-bottom: 3px;
     }
-    .ticket-field span {
-      font-size: 14px;
-      font-weight: 600;
-    }
+    .ticket-field span { font-size: 13px; font-weight: 600; }
 
-    /* Color themes */
-    .ticket-red   { background: linear-gradient(160deg, #c1121f 0%, #8b0000 100%); color: #fff; }
-    .ticket-green { background: linear-gradient(160deg, #1b7e2f 0%, #0d5c1e 100%); color: #fff; }
-    .ticket-blue  { background: linear-gradient(160deg, #1565c0 0%, #0d3b8c 100%); color: #fff; }
+    /* Ticket color themes */
+    .ticket-red   { background: linear-gradient(155deg, #8b0000 0%, #4a0000 100%); color: #fff; }
+    .ticket-green { background: linear-gradient(155deg, #1b7e2f 0%, #0a5018 100%); color: #fff; }
+    .ticket-blue  { background: linear-gradient(155deg, #1565c0 0%, #0a3880 100%); color: #fff; }
 
-    .sq-red   { background: #e63946; --sq-glow: rgba(230,57,70,0.6); }
-    .sq-green { background: #2dc653; --sq-glow: rgba(45,198,83,0.6); }
-    .sq-blue  { background: #4895ef; --sq-glow: rgba(72,149,239,0.6); }
+    .sq-red   { background: #8b0000; --sq-glow: rgba(139,0,0,0.65); }
+    .sq-green { background: #2dc653; --sq-glow: rgba(45,198,83,0.65); }
+    .sq-blue  { background: #4895ef; --sq-glow: rgba(72,149,239,0.65); }
 
+    /* ─── Instructions ────────────────────────────────────── */
     .instructions {
       background: var(--surface);
       border-radius: var(--radius);
+      border: 1px solid #ffffff0a;
       padding: 16px 18px;
       width: 100%;
       max-width: 340px;
     }
     .instructions h4 {
-      font-size: 12px;
+      font-size: 11px;
       font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 0.8px;
+      letter-spacing: 1px;
       color: var(--accent);
       margin-bottom: 10px;
     }
@@ -337,7 +376,7 @@
       padding-left: 16px;
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      gap: 7px;
     }
     .instructions li {
       font-size: 13px;
@@ -351,34 +390,36 @@
       gap: 8px;
       align-items: center;
       justify-content: center;
-      padding-top: 4px;
+      padding: 14px 0 0;
     }
     .step-dot {
-      width: 8px;
-      height: 8px;
+      width: 8px; height: 8px;
       border-radius: 50%;
-      background: #ffffff20;
+      background: #ffffff18;
       transition: background 0.3s, width 0.3s;
     }
-    .step-dot.active {
+    .step-dot.active { background: var(--accent); width: 24px; border-radius: 4px; }
+    .step-dot.done   { background: #ffffff35; }
+
+    /* ─── Red accent line under header ───────────────────── */
+    .accent-line {
+      width: 100%;
+      height: 2px;
       background: var(--accent);
-      width: 24px;
-      border-radius: 4px;
     }
-    .step-dot.done { background: #ffffff40; }
   </style>
 </head>
 <body>
 
   <!-- Header -->
   <div class="header">
-    <div class="museum-logo">🏛️</div>
-    <h1>Museum Entry Pass</h1>
-    <p>Powered by Husky AI · Scan &amp; Enter</p>
+    <img class="logo" src="equall-museum-high-resolution-logo.png" alt="Equall Museum" />
+    <p>Powered by Husky AI &middot; Scan &amp; Enter</p>
   </div>
+  <div class="accent-line"></div>
 
   <!-- Step dots -->
-  <div class="steps" id="steps" style="padding: 16px 0 0;">
+  <div class="steps" id="steps">
     <div class="step-dot active" id="dot-0"></div>
     <div class="step-dot" id="dot-1"></div>
     <div class="step-dot" id="dot-2"></div>
@@ -386,58 +427,67 @@
 
   <!-- Screen 1: Welcome -->
   <div class="screen active" id="screen-welcome">
-    <div class="welcome-icon">👋</div>
-    <h2 class="welcome-title">Welcome to the Museum</h2>
-    <p class="welcome-sub">
-      Get your digital entry pass in seconds.<br>
-      Fill in your visit details and we'll generate a color-coded ticket you can scan at the entrance.
-    </p>
-    <button class="btn btn-primary" onclick="goTo('screen-info')">Get My Ticket →</button>
+    <div class="hero">
+      <img src="AdobeStock_582767215.jpeg" alt="Equall Museum interior" />
+      <div class="hero-text">
+        <span>The Nexus of Innovation and Art</span>
+        <h2>Welcome to<br>Equall Museum</h2>
+      </div>
+    </div>
+    <div class="welcome-body">
+      <p class="welcome-sub">
+        Get your digital entry pass in seconds.<br>
+        Choose your group type and we'll generate a color-coded ticket scannable at the entrance.
+      </p>
+      <button class="btn btn-primary" onclick="goTo('screen-info')">Get My Ticket &rarr;</button>
+    </div>
   </div>
 
   <!-- Screen 2: Visit info -->
   <div class="screen" id="screen-info">
-    <div class="form-group">
-      <label>Visitor Name</label>
-      <input type="text" id="name" placeholder="e.g. Maria Papadopoulou" autocomplete="name" />
-    </div>
-    <div class="form-group">
-      <label>Date of Visit</label>
-      <input type="date" id="visit-date" />
-    </div>
-    <div class="form-group">
-      <label>Number of People</label>
-      <input type="number" id="count" placeholder="e.g. 4" min="1" max="99" />
-    </div>
+    <div class="form-wrap">
+      <div class="form-group">
+        <label>Visitor Name</label>
+        <input type="text" id="name" placeholder="e.g. Maria Papadopoulou" autocomplete="name" />
+      </div>
+      <div class="form-group">
+        <label>Date of Visit</label>
+        <input type="date" id="visit-date" />
+      </div>
+      <div class="form-group">
+        <label>Number of People</label>
+        <input type="number" id="count" placeholder="e.g. 4" min="1" max="99" />
+      </div>
 
-    <div class="choice-label" style="margin-top:4px;">Select your group type</div>
+      <div class="choice-label">Select your group type</div>
 
-    <div class="choices">
-      <div class="choice-card card-red" data-type="adults" onclick="selectType(this)">
-        <div class="choice-dot red"></div>
-        <div class="choice-text">
-          <h3>Adults Only</h3>
-          <p>Group consisting entirely of adults (18+)</p>
+      <div class="choices">
+        <div class="choice-card card-red" data-type="adults" onclick="selectType(this)">
+          <div class="choice-dot red"></div>
+          <div class="choice-text">
+            <h3>Adults Only</h3>
+            <p>Group consisting entirely of adults (18+)</p>
+          </div>
+        </div>
+        <div class="choice-card card-green" data-type="children" onclick="selectType(this)">
+          <div class="choice-dot green"></div>
+          <div class="choice-text">
+            <h3>Adults &amp; Children</h3>
+            <p>Mixed group of adults and minors</p>
+          </div>
+        </div>
+        <div class="choice-card card-blue" data-type="disabilities" onclick="selectType(this)">
+          <div class="choice-dot blue"></div>
+          <div class="choice-text">
+            <h3>Adults, Children &amp; Disabilities</h3>
+            <p>Group includes persons with disabilities</p>
+          </div>
         </div>
       </div>
-      <div class="choice-card card-green" data-type="children" onclick="selectType(this)">
-        <div class="choice-dot green"></div>
-        <div class="choice-text">
-          <h3>Adults &amp; Children</h3>
-          <p>Mixed group of adults and minors</p>
-        </div>
-      </div>
-      <div class="choice-card card-blue" data-type="disabilities" onclick="selectType(this)">
-        <div class="choice-dot blue"></div>
-        <div class="choice-text">
-          <h3>Adults, Children &amp; Disabilities</h3>
-          <p>Group includes persons with disabilities</p>
-        </div>
-      </div>
-    </div>
 
-    <button class="btn btn-primary" id="btn-generate" onclick="generateTicket()" disabled>Generate My Pass</button>
-    <button class="btn btn-ghost" onclick="goTo('screen-welcome')">← Back</button>
+      <button class="btn btn-primary" id="btn-generate" onclick="generateTicket()" disabled>Generate My Pass</button>
+      <button class="btn btn-ghost" onclick="goTo('screen-welcome')">&larr; Back</button>
+    </div>
   </div>
 
   <!-- Screen 3: Ticket -->
@@ -445,11 +495,11 @@
     <div class="ticket-wrapper">
       <div class="ticket-card" id="ticket-card">
         <div class="ticket-top">
-          <span class="museum-name">Museum Pass</span>
-          <span class="ticket-type-badge" id="ticket-badge">—</span>
+          <img class="ticket-logo" src="equall-museum-high-resolution-logo.png" alt="Equall Museum" />
+          <span class="ticket-type-badge" id="ticket-badge">&mdash;</span>
         </div>
 
-        <div class="color-square-container" style="padding-bottom: 42px;">
+        <div class="color-square-container">
           <div class="color-square" id="color-square">
             <span class="scan-hint">Hold up to Husky AI Lens camera</span>
           </div>
@@ -460,19 +510,19 @@
         <div class="ticket-bottom">
           <div class="ticket-field">
             <label>Visitor</label>
-            <span id="t-name">—</span>
+            <span id="t-name">&mdash;</span>
           </div>
           <div class="ticket-field">
             <label>Date</label>
-            <span id="t-date">—</span>
+            <span id="t-date">&mdash;</span>
           </div>
           <div class="ticket-field">
             <label>Group Size</label>
-            <span id="t-count">—</span>
+            <span id="t-count">&mdash;</span>
           </div>
           <div class="ticket-field">
             <label>Pass ID</label>
-            <span id="t-id">—</span>
+            <span id="t-id">&mdash;</span>
           </div>
         </div>
       </div>
@@ -487,14 +537,13 @@
         </ol>
       </div>
 
-      <button class="btn btn-ghost" onclick="reset()">← New Ticket</button>
+      <button class="btn btn-ghost" onclick="reset()">&larr; New Ticket</button>
     </div>
   </div>
 
   <script>
     let selectedType = null;
 
-    // Pre-fill today's date
     const dateInput = document.getElementById('visit-date');
     const today = new Date().toISOString().split('T')[0];
     dateInput.value = today;
@@ -502,8 +551,8 @@
     function goTo(id) {
       document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
       document.getElementById(id).classList.add('active');
-      const idx = ['screen-welcome','screen-info','screen-ticket'].indexOf(id);
-      ['dot-0','dot-1','dot-2'].forEach((d, i) => {
+      const idx = ['screen-welcome', 'screen-info', 'screen-ticket'].indexOf(id);
+      ['dot-0', 'dot-1', 'dot-2'].forEach((d, i) => {
         const el = document.getElementById(d);
         el.className = 'step-dot' + (i === idx ? ' active' : i < idx ? ' done' : '');
       });
@@ -523,15 +572,13 @@
       const count = document.getElementById('count').value || '1';
 
       const config = {
-        adults:       { color: 'red',   label: 'Adults Only',     sqClass: 'sq-red',   cardClass: 'ticket-red'   },
-        children:     { color: 'green', label: 'Adults & Children', sqClass: 'sq-green', cardClass: 'ticket-green' },
-        disabilities: { color: 'blue',  label: 'Incl. Disabilities', sqClass: 'sq-blue',  cardClass: 'ticket-blue'  },
+        adults:       { label: 'Adults Only',          sqClass: 'sq-red',   cardClass: 'ticket-red'   },
+        children:     { label: 'Adults & Children',    sqClass: 'sq-green', cardClass: 'ticket-green' },
+        disabilities: { label: 'Incl. Disabilities',   sqClass: 'sq-blue',  cardClass: 'ticket-blue'  },
       };
 
       const c = config[selectedType];
-      const passId = 'MSP-' + Math.random().toString(36).substring(2,7).toUpperCase();
-
-      // Format date
+      const passId = 'EQ-' + Math.random().toString(36).substring(2, 7).toUpperCase();
       const [y, m, d] = date.split('-');
       const fmt = d && m ? `${d}/${m}/${y}` : '—';
 
@@ -543,14 +590,11 @@
 
       const sq   = document.getElementById('color-square');
       const card = document.getElementById('ticket-card');
-
-      // Reset classes
       sq.className   = 'color-square ' + c.sqClass;
-      card.className = 'ticket-card ' + c.cardClass;
+      card.className = 'ticket-card '  + c.cardClass;
 
       goTo('screen-ticket');
 
-      // Keep screen bright (where supported)
       if ('wakeLock' in navigator) {
         navigator.wakeLock.request('screen').catch(() => {});
       }
