@@ -386,10 +386,11 @@
       position: relative;
       z-index: 1;
     }
-    .qr-wrapper img {
+    #qr-container img,
+    #qr-container canvas {
       display: block;
-      width: 140px;
-      height: 140px;
+      width: 140px !important;
+      height: 140px !important;
     }
 
     .ticket-divider {
@@ -589,7 +590,7 @@
         <div class="color-square-container">
           <div class="color-square" id="color-square">
             <div class="qr-wrapper">
-              <img id="qr-img" src="" alt="QR Code" width="140" height="140" />
+              <div id="qr-container"></div>
             </div>
             <span class="scan-hint">Scan QR &middot; Hold up to entrance scanner</span>
           </div>
@@ -633,7 +634,7 @@
     </div>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script>
     let selectedType = null;
@@ -713,17 +714,24 @@
       sq.className   = 'color-square ' + c.sqClass;
       card.className = 'ticket-card '  + c.cardClass;
 
-      // Generate real QR code encoding pass data
-      const qrData = `EQUALL:${currentPassId};NAME:${nameVal};DATE:${date};TYPE:${selectedType};SIZE:${personCount}`;
-      QRCode.toDataURL(qrData, {
-        width: 140,
-        margin: 1,
-        color: { dark: '#000000', light: '#ffffff' }
-      }, (err, url) => {
-        if (!err) document.getElementById('qr-img').src = url;
-      });
-
       goTo('screen-ticket');
+
+      // Generate real QR code encoding pass data
+      try {
+        const qrData = `EQUALL:${currentPassId};NAME:${nameVal};DATE:${date};TYPE:${selectedType};SIZE:${personCount}`;
+        const qrContainer = document.getElementById('qr-container');
+        qrContainer.innerHTML = '';
+        new QRCode(qrContainer, {
+          text: qrData,
+          width: 140,
+          height: 140,
+          colorDark: '#000000',
+          colorLight: '#ffffff',
+          correctLevel: QRCode.CorrectLevel.H
+        });
+      } catch (e) {
+        // QR library unavailable — colored square still identifies the pass
+      }
 
       if ('wakeLock' in navigator) {
         navigator.wakeLock.request('screen').catch(() => {});
