@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#ffffff" />
   <title>Equall Museum · Entry Pass</title>
   <style>
@@ -17,57 +17,90 @@
       --text: #111111;
       --text-muted: #666666;
       --radius: 16px;
+      --safe-top: env(safe-area-inset-top, 0px);
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
     }
+
+    html { height: 100%; }
 
     body {
       font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
       background: var(--bg);
       color: var(--text);
-      min-height: 100dvh;
+      min-height: 100svh;
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: flex-start;
-      padding: 0 0 48px;
+      padding-top: var(--safe-top);
+      padding-bottom: calc(40px + var(--safe-bottom));
+      -webkit-text-size-adjust: 100%;
     }
 
     /* ─── Header ─────────────────────────────────────────── */
     .header {
       width: 100%;
       background: #ffffff;
-      padding: 20px 24px 16px;
+      padding: 16px 24px 12px;
       text-align: center;
       border-bottom: 1px solid #e0e0e0;
       display: flex;
       flex-direction: column;
       align-items: center;
       gap: 6px;
+      position: sticky;
+      top: 0;
+      z-index: 10;
     }
     .header img.logo {
-      width: 96px;
-      height: 96px;
+      width: clamp(72px, 20vw, 96px);
+      height: clamp(72px, 20vw, 96px);
       object-fit: contain;
     }
     .header p {
-      font-size: 12px;
+      font-size: clamp(11px, 3vw, 13px);
       color: var(--text-muted);
       letter-spacing: 0.6px;
     }
+
+    .accent-line {
+      width: 100%;
+      height: 2px;
+      background: var(--accent);
+      flex-shrink: 0;
+    }
+
+    /* ─── Step dots ───────────────────────────────────────── */
+    .steps {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      justify-content: center;
+      padding: 14px 0 0;
+      width: 100%;
+    }
+    .step-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: #cccccc;
+      transition: background 0.3s, width 0.3s;
+    }
+    .step-dot.active { background: var(--accent); width: 24px; border-radius: 4px; }
+    .step-dot.done   { background: #aaaaaa; }
 
     /* ─── Screens ─────────────────────────────────────────── */
     .screen {
       display: none;
       width: 100%;
-      max-width: 480px;
+      max-width: min(480px, 100%);
       flex-direction: column;
       align-items: center;
       gap: 20px;
-      animation: fadeIn 0.35s ease;
+      animation: fadeIn 0.3s ease;
     }
     .screen.active { display: flex; }
 
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
+      from { opacity: 0; transform: translateY(8px); }
       to   { opacity: 1; transform: translateY(0); }
     }
 
@@ -75,7 +108,7 @@
     .hero {
       width: 100%;
       position: relative;
-      height: 260px;
+      height: clamp(200px, 40svh, 300px);
       overflow: hidden;
     }
     .hero img {
@@ -90,8 +123,8 @@
       position: absolute;
       inset: 0;
       background:
-        linear-gradient(to bottom, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 30%, rgba(255,255,255,0) 55%, rgba(255,255,255,1) 100%),
-        linear-gradient(to right,  rgba(255,255,255,0.5) 0%, rgba(255,255,255,0) 18%, rgba(255,255,255,0) 82%, rgba(255,255,255,0.5) 100%);
+        linear-gradient(to bottom, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 25%, rgba(255,255,255,0) 55%, rgba(255,255,255,1) 100%),
+        linear-gradient(to right,  rgba(255,255,255,0.45) 0%, rgba(255,255,255,0) 18%, rgba(255,255,255,0) 82%, rgba(255,255,255,0.45) 100%);
       pointer-events: none;
     }
     .hero-text {
@@ -102,38 +135,36 @@
       align-items: center;
       justify-content: center;
       gap: 8px;
-      padding: 0 24px;
-      padding-bottom: 30px;
+      padding: 0 24px 28px;
       z-index: 1;
     }
     .hero-text h2 {
-      font-size: 26px;
+      font-size: clamp(22px, 6vw, 28px);
       font-weight: 800;
       text-align: center;
       line-height: 1.2;
-      letter-spacing: 0.3px;
       color: #fff;
-      text-shadow: 0 2px 12px rgba(0,0,0,0.6);
+      text-shadow: 0 2px 12px rgba(0,0,0,0.65);
     }
     .hero-text span {
-      font-size: 11px;
+      font-size: clamp(10px, 2.5vw, 12px);
       color: #ff6060;
       font-weight: 700;
       letter-spacing: 2.5px;
       text-transform: uppercase;
-      text-shadow: 0 1px 6px rgba(0,0,0,0.8);
+      text-shadow: 0 1px 6px rgba(0,0,0,0.85);
     }
 
     .welcome-body {
       width: 100%;
-      padding: 0 20px;
+      padding: 0 clamp(16px, 5vw, 24px);
       display: flex;
       flex-direction: column;
       gap: 20px;
       align-items: center;
     }
     .welcome-sub {
-      font-size: 15px;
+      font-size: clamp(14px, 4vw, 16px);
       color: var(--text-muted);
       text-align: center;
       line-height: 1.65;
@@ -142,10 +173,10 @@
     /* ─── Form ────────────────────────────────────────────── */
     .form-wrap {
       width: 100%;
-      padding: 0 20px;
+      padding: 0 clamp(16px, 5vw, 24px);
       display: flex;
       flex-direction: column;
-      gap: 20px;
+      gap: 18px;
       align-items: center;
     }
     .form-group {
@@ -172,6 +203,7 @@
       outline: none;
       transition: border-color 0.2s;
       -webkit-appearance: none;
+      appearance: none;
     }
     .form-group input:focus { border-color: var(--accent); }
     .form-group input.input-error { border-color: #cc0000; }
@@ -248,13 +280,13 @@
       transition: border-color 0.2s, background 0.2s, transform 0.15s;
       user-select: none;
       -webkit-tap-highlight-color: transparent;
+      min-height: 64px;
     }
     .choice-card:active { transform: scale(0.985); }
     .choice-card.selected { background: var(--surface2); }
 
     .choice-dot {
-      width: 26px;
-      height: 26px;
+      width: 26px; height: 26px;
       border-radius: 50%;
       flex-shrink: 0;
     }
@@ -278,22 +310,22 @@
       padding: 16px;
       border: none;
       border-radius: var(--radius);
-      font-size: 16px;
+      font-size: clamp(15px, 4vw, 17px);
       font-weight: 700;
       cursor: pointer;
       letter-spacing: 0.4px;
-      transition: opacity 0.2s, transform 0.15s;
+      transition: background 0.2s, transform 0.15s;
       -webkit-tap-highlight-color: transparent;
+      min-height: 52px;
     }
     .btn:active { transform: scale(0.98); }
     .btn:disabled { opacity: 0.3; cursor: not-allowed; }
     .btn-primary { background: var(--accent); color: #fff; }
-    .btn-primary:not(:disabled):hover { background: var(--accent-dark); }
+    .btn-primary:not(:disabled):active { background: var(--accent-dark); }
     .btn-ghost {
       background: transparent;
       border: 1px solid #cccccc;
       color: var(--text-muted);
-      font-size: 14px;
     }
     .btn-save {
       background: transparent;
@@ -301,24 +333,23 @@
       color: var(--accent);
       font-size: 15px;
     }
-    .btn-save:hover { background: #99000010; }
 
     /* ─── Ticket ──────────────────────────────────────────── */
     .ticket-wrapper {
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 22px;
+      gap: 20px;
       width: 100%;
-      padding: 0 20px;
+      padding: 0 clamp(16px, 5vw, 24px);
     }
 
     .ticket-card {
       width: 100%;
-      max-width: 340px;
+      max-width: 360px;
       border-radius: 22px;
       overflow: hidden;
-      box-shadow: 0 24px 64px rgba(0,0,0,0.6);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.25);
     }
 
     .ticket-top {
@@ -328,8 +359,8 @@
       justify-content: space-between;
     }
     .ticket-top img.ticket-logo {
-      width: 48px;
-      height: 48px;
+      width: clamp(40px, 12vw, 52px);
+      height: clamp(40px, 12vw, 52px);
       object-fit: contain;
     }
     .ticket-type-badge {
@@ -343,60 +374,43 @@
       border-radius: 20px;
     }
 
+    /* ─── Color square (the scannable pass) ───────────────── */
     .color-square-container {
       display: flex;
       justify-content: center;
       align-items: center;
-      padding: 8px 22px 46px;
+      padding: 8px 22px 48px;
     }
     .color-square {
-      width: 190px;
-      height: 190px;
-      border-radius: 18px;
+      width: clamp(160px, 48vw, 210px);
+      height: clamp(160px, 48vw, 210px);
+      border-radius: 20px;
       position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 0 50px var(--sq-glow, rgba(255,255,255,0.2));
+      box-shadow: 0 0 60px var(--sq-glow, rgba(255,255,255,0.2));
     }
+    /* Gloss shimmer */
     .color-square::after {
       content: '';
       position: absolute;
       inset: 0;
-      border-radius: 18px;
-      background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, transparent 55%);
+      border-radius: 20px;
+      background: linear-gradient(135deg, rgba(255,255,255,0.22) 0%, transparent 55%);
       pointer-events: none;
     }
     .color-square .scan-hint {
       position: absolute;
       bottom: -30px;
+      left: 50%;
+      transform: translateX(-50%);
       font-size: 11px;
-      color: rgba(255,255,255,0.45);
+      color: rgba(0,0,0,0.4);
       letter-spacing: 0.4px;
       white-space: nowrap;
     }
 
-    .qr-wrapper {
-      background: #fff;
-      border-radius: 10px;
-      padding: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-      z-index: 1;
-    }
-    #qr-container img,
-    #qr-container canvas {
-      display: block;
-      width: 140px !important;
-      height: 140px !important;
-    }
-
     .ticket-divider {
       height: 1px;
-      background: rgba(0,0,0,0.2);
-      margin: 0 0 2px;
+      background: rgba(0,0,0,0.15);
       position: relative;
     }
     .ticket-divider::before,
@@ -433,9 +447,10 @@
     .ticket-green { background: linear-gradient(155deg, #1b7e2f 0%, #0a5018 100%); color: #fff; }
     .ticket-blue  { background: linear-gradient(155deg, #1565c0 0%, #0a3880 100%); color: #fff; }
 
-    .sq-red   { background: #8b0000; --sq-glow: rgba(139,0,0,0.65); }
-    .sq-green { background: #2dc653; --sq-glow: rgba(45,198,83,0.65); }
-    .sq-blue  { background: #4895ef; --sq-glow: rgba(72,149,239,0.65); }
+    /* Plain solid color squares — pure, max-contrast for scanner */
+    .sq-red   { background: #cc0000; --sq-glow: rgba(200,0,0,0.5); }
+    .sq-green { background: #00bb44; --sq-glow: rgba(0,187,68,0.5); }
+    .sq-blue  { background: #1a7fe8; --sq-glow: rgba(26,127,232,0.5); }
 
     /* ─── Instructions ────────────────────────────────────── */
     .instructions {
@@ -444,7 +459,7 @@
       border: 1px solid #dddddd;
       padding: 16px 18px;
       width: 100%;
-      max-width: 340px;
+      max-width: 360px;
     }
     .instructions h4 {
       font-size: 11px;
@@ -464,30 +479,6 @@
       font-size: 13px;
       color: var(--text-muted);
       line-height: 1.5;
-    }
-
-    /* ─── Step indicator ──────────────────────────────────── */
-    .steps {
-      display: flex;
-      gap: 8px;
-      align-items: center;
-      justify-content: center;
-      padding: 14px 0 0;
-    }
-    .step-dot {
-      width: 8px; height: 8px;
-      border-radius: 50%;
-      background: #cccccc;
-      transition: background 0.3s, width 0.3s;
-    }
-    .step-dot.active { background: var(--accent); width: 24px; border-radius: 4px; }
-    .step-dot.done   { background: #aaaaaa; }
-
-    /* ─── Red accent line under header ───────────────────── */
-    .accent-line {
-      width: 100%;
-      height: 2px;
-      background: var(--accent);
     }
   </style>
 </head>
@@ -567,7 +558,7 @@
         <div class="choice-card card-blue" data-type="disabilities" onclick="selectType(this)">
           <div class="choice-dot blue"></div>
           <div class="choice-text">
-            <h3>Adults, Children &amp; Visitors with Disabilities</h3>
+            <h3>Adults, Children &amp; Disabilities</h3>
             <p>Group includes visitors with disabilities</p>
           </div>
         </div>
@@ -589,10 +580,7 @@
 
         <div class="color-square-container">
           <div class="color-square" id="color-square">
-            <div class="qr-wrapper">
-              <div id="qr-container"></div>
-            </div>
-            <span class="scan-hint">Scan QR &middot; Hold up to entrance scanner</span>
+            <span class="scan-hint">Hold up to Husky AI Lens camera</span>
           </div>
         </div>
 
@@ -618,14 +606,12 @@
         </div>
       </div>
 
-      <button class="btn btn-save" onclick="saveTicket()">&#8681; Save Ticket</button>
-
       <div class="instructions">
         <h4>How to enter</h4>
         <ol>
-          <li>Show this screen to the scanner at the entrance.</li>
+          <li>Show this screen to the Husky AI Lens camera at the entrance.</li>
           <li>Keep brightness at maximum for best scan results.</li>
-          <li>The QR code and color identify your group category automatically.</li>
+          <li>The color of the square identifies your group category automatically.</li>
           <li>Wait for the green confirmation light, then proceed inside.</li>
         </ol>
       </div>
@@ -634,12 +620,9 @@
     </div>
   </div>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script>
     let selectedType = null;
     let personCount = 1;
-    let currentPassId = '';
 
     const dateInput = document.getElementById('visit-date');
     const today = new Date().toISOString().split('T')[0];
@@ -653,14 +636,14 @@
         const el = document.getElementById(d);
         el.className = 'step-dot' + (i === idx ? ' active' : i < idx ? ' done' : '');
       });
-      window.scrollTo(0, 0);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     function changeCount(delta) {
       personCount = Math.max(1, Math.min(99, personCount + delta));
       document.getElementById('count-display').textContent = personCount;
       document.getElementById('count-minus').disabled = personCount <= 1;
-      document.getElementById('count-plus').disabled = personCount >= 99;
+      document.getElementById('count-plus').disabled  = personCount >= 99;
     }
 
     function selectType(card) {
@@ -691,68 +674,30 @@
       }
 
       const date = document.getElementById('visit-date').value;
-
       const config = {
-        adults:       { label: 'Adults Only',       sqClass: 'sq-red',   cardClass: 'ticket-red'   },
+        adults:       { label: 'Adults Only',        sqClass: 'sq-red',   cardClass: 'ticket-red'   },
         children:     { label: 'Adults & Children',  sqClass: 'sq-green', cardClass: 'ticket-green' },
         disabilities: { label: 'Incl. Disabilities', sqClass: 'sq-blue',  cardClass: 'ticket-blue'  },
       };
 
       const c = config[selectedType];
-      currentPassId = 'EQ-' + Math.random().toString(36).substring(2, 7).toUpperCase();
+      const passId = 'EQ-' + Math.random().toString(36).substring(2, 7).toUpperCase();
       const [y, m, d] = date.split('-');
       const fmt = d && m ? `${d}/${m}/${y}` : '—';
 
       document.getElementById('t-name').textContent  = nameVal;
       document.getElementById('t-date').textContent  = fmt;
       document.getElementById('t-count').textContent = personCount + (personCount === 1 ? ' person' : ' people');
-      document.getElementById('t-id').textContent    = currentPassId;
+      document.getElementById('t-id').textContent    = passId;
       document.getElementById('ticket-badge').textContent = c.label;
 
-      const sq   = document.getElementById('color-square');
-      const card = document.getElementById('ticket-card');
-      sq.className   = 'color-square ' + c.sqClass;
-      card.className = 'ticket-card '  + c.cardClass;
+      document.getElementById('color-square').className = 'color-square ' + c.sqClass;
+      document.getElementById('ticket-card').className  = 'ticket-card '  + c.cardClass;
 
       goTo('screen-ticket');
 
-      // Generate real QR code encoding pass data
-      try {
-        const qrData = `EQUALL:${currentPassId};NAME:${nameVal};DATE:${date};TYPE:${selectedType};SIZE:${personCount}`;
-        const qrContainer = document.getElementById('qr-container');
-        qrContainer.innerHTML = '';
-        new QRCode(qrContainer, {
-          text: qrData,
-          width: 140,
-          height: 140,
-          colorDark: '#000000',
-          colorLight: '#ffffff',
-          correctLevel: QRCode.CorrectLevel.H
-        });
-      } catch (e) {
-        // QR library unavailable — colored square still identifies the pass
-      }
-
       if ('wakeLock' in navigator) {
         navigator.wakeLock.request('screen').catch(() => {});
-      }
-    }
-
-    async function saveTicket() {
-      const card = document.getElementById('ticket-card');
-      try {
-        const canvas = await html2canvas(card, {
-          scale: 2,
-          useCORS: true,
-          backgroundColor: null,
-          logging: false
-        });
-        const link = document.createElement('a');
-        link.download = `equall-pass-${currentPassId}.png`;
-        link.href = canvas.toDataURL('image/png');
-        link.click();
-      } catch (e) {
-        alert('Could not save automatically. Please take a screenshot to keep your ticket.');
       }
     }
 
@@ -766,7 +711,7 @@
       document.getElementById('name-error').classList.remove('visible');
       document.getElementById('count-display').textContent = '1';
       document.getElementById('count-minus').disabled = true;
-      document.getElementById('count-plus').disabled = false;
+      document.getElementById('count-plus').disabled  = false;
       document.getElementById('visit-date').value = today;
       goTo('screen-welcome');
     }
