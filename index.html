@@ -334,33 +334,66 @@
       font-size: 15px;
     }
 
-    /* ─── Ticket ──────────────────────────────────────────── */
+    /* ─── Ticket screen ──────────────────────────────────────── */
     .ticket-wrapper {
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 20px;
+      gap: 0;
       width: 100%;
-      padding: 0 clamp(16px, 5vw, 24px);
     }
 
-    .ticket-card {
+    /* ── Big scannable color panel ── */
+    .scan-panel {
       width: 100%;
-      max-width: 360px;
-      border-radius: 22px;
-      overflow: hidden;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+      aspect-ratio: 1 / 1;        /* perfect square, full width */
+      max-height: 75vw;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      position: relative;
+      transition: background 0.3s;
+    }
+    .scan-panel-label {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.75);
+    }
+    .scan-panel-icon {
+      font-size: 48px;
+      opacity: 0.85;
+    }
+    .scan-panel-hint {
+      font-size: 12px;
+      color: rgba(255,255,255,0.55);
+      letter-spacing: 0.5px;
     }
 
-    .ticket-top {
-      padding: 18px 20px 14px;
+    /* Color states — pure vivid for camera recognition */
+    .scan-red   { background: #dd0000; }
+    .scan-green { background: #00aa33; }
+    .scan-blue  { background: #0066dd; }
+
+    /* ── Ticket detail strip below the panel ── */
+    .ticket-strip {
+      width: 100%;
+      background: #ffffff;
+      border-top: 3px solid #eeeeee;
+      padding: 16px 20px 12px;
+    }
+    .ticket-strip-top {
       display: flex;
       align-items: center;
       justify-content: space-between;
+      margin-bottom: 14px;
     }
-    .ticket-top img.ticket-logo {
-      width: clamp(40px, 12vw, 52px);
-      height: clamp(40px, 12vw, 52px);
+    .ticket-strip-top img {
+      width: 44px;
+      height: 44px;
       object-fit: contain;
     }
     .ticket-type-badge {
@@ -368,68 +401,18 @@
       font-weight: 700;
       letter-spacing: 1px;
       text-transform: uppercase;
-      background: rgba(0,0,0,0.25);
+      padding: 4px 12px;
+      border-radius: 20px;
       color: #fff;
-      padding: 4px 10px;
-      border-radius: 20px;
     }
+    .badge-red   { background: #dd0000; }
+    .badge-green { background: #00aa33; }
+    .badge-blue  { background: #0066dd; }
 
-    /* ─── Color square (the scannable pass) ───────────────── */
-    .color-square-container {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 8px 22px 48px;
-    }
-    .color-square {
-      width: clamp(160px, 48vw, 210px);
-      height: clamp(160px, 48vw, 210px);
-      border-radius: 20px;
-      position: relative;
-      box-shadow: 0 0 60px var(--sq-glow, rgba(255,255,255,0.2));
-    }
-    /* Gloss shimmer */
-    .color-square::after {
-      content: '';
-      position: absolute;
-      inset: 0;
-      border-radius: 20px;
-      background: linear-gradient(135deg, rgba(255,255,255,0.22) 0%, transparent 55%);
-      pointer-events: none;
-    }
-    .color-square .scan-hint {
-      position: absolute;
-      bottom: -30px;
-      left: 50%;
-      transform: translateX(-50%);
-      font-size: 11px;
-      color: rgba(0,0,0,0.4);
-      letter-spacing: 0.4px;
-      white-space: nowrap;
-    }
-
-    .ticket-divider {
-      height: 1px;
-      background: rgba(0,0,0,0.15);
-      position: relative;
-    }
-    .ticket-divider::before,
-    .ticket-divider::after {
-      content: '';
-      position: absolute;
-      top: -10px;
-      width: 20px; height: 20px;
-      border-radius: 50%;
-      background: var(--bg);
-    }
-    .ticket-divider::before { left: -10px; }
-    .ticket-divider::after  { right: -10px; }
-
-    .ticket-bottom {
-      padding: 16px 20px 20px;
+    .ticket-fields {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 12px;
+      gap: 10px;
     }
     .ticket-field label {
       display: block;
@@ -437,20 +420,22 @@
       font-weight: 700;
       letter-spacing: 1px;
       text-transform: uppercase;
-      opacity: 0.55;
-      margin-bottom: 3px;
+      color: #aaaaaa;
+      margin-bottom: 2px;
     }
-    .ticket-field span { font-size: 13px; font-weight: 600; }
+    .ticket-field span {
+      font-size: 13px;
+      font-weight: 600;
+      color: #111111;
+    }
 
-    /* Ticket color themes */
-    .ticket-red   { background: linear-gradient(155deg, #8b0000 0%, #4a0000 100%); color: #fff; }
-    .ticket-green { background: linear-gradient(155deg, #1b7e2f 0%, #0a5018 100%); color: #fff; }
-    .ticket-blue  { background: linear-gradient(155deg, #1565c0 0%, #0a3880 100%); color: #fff; }
-
-    /* Plain solid color squares — pure, max-contrast for scanner */
-    .sq-red   { background: #cc0000; --sq-glow: rgba(200,0,0,0.5); }
-    .sq-green { background: #00bb44; --sq-glow: rgba(0,187,68,0.5); }
-    .sq-blue  { background: #1a7fe8; --sq-glow: rgba(26,127,232,0.5); }
+    .ticket-actions {
+      width: 100%;
+      padding: 14px 20px 0;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
 
     /* ─── Instructions ────────────────────────────────────── */
     .instructions {
@@ -572,21 +557,21 @@
   <!-- Screen 3: Ticket -->
   <div class="screen" id="screen-ticket">
     <div class="ticket-wrapper">
-      <div class="ticket-card" id="ticket-card">
-        <div class="ticket-top">
-          <img class="ticket-logo" src="equall-museum-high-resolution-logo.png" alt="Equall Museum" />
+
+      <!-- Full-width color panel for Husky AI lens -->
+      <div class="scan-panel" id="scan-panel">
+        <div class="scan-panel-icon">📷</div>
+        <div class="scan-panel-label">Hold up to Husky AI Lens</div>
+        <div class="scan-panel-hint" id="t-color-hint">&mdash;</div>
+      </div>
+
+      <!-- Ticket detail strip -->
+      <div class="ticket-strip">
+        <div class="ticket-strip-top">
+          <img src="equall-museum-high-resolution-logo.png" alt="Equall Museum" />
           <span class="ticket-type-badge" id="ticket-badge">&mdash;</span>
         </div>
-
-        <div class="color-square-container">
-          <div class="color-square" id="color-square">
-            <span class="scan-hint">Hold up to Husky AI Lens camera</span>
-          </div>
-        </div>
-
-        <div class="ticket-divider"></div>
-
-        <div class="ticket-bottom">
+        <div class="ticket-fields">
           <div class="ticket-field">
             <label>Visitor</label>
             <span id="t-name">&mdash;</span>
@@ -606,17 +591,10 @@
         </div>
       </div>
 
-      <div class="instructions">
-        <h4>How to enter</h4>
-        <ol>
-          <li>Show this screen to the Husky AI Lens camera at the entrance.</li>
-          <li>Keep brightness at maximum for best scan results.</li>
-          <li>The color of the square identifies your group category automatically.</li>
-          <li>Wait for the green confirmation light, then proceed inside.</li>
-        </ol>
+      <div class="ticket-actions">
+        <button class="btn btn-ghost" onclick="resetApp()">&larr; New Ticket</button>
       </div>
 
-      <button class="btn btn-ghost" onclick="resetApp()">&larr; New Ticket</button>
     </div>
   </div>
 
@@ -675,9 +653,9 @@
 
       const date = document.getElementById('visit-date').value;
       const config = {
-        adults:       { label: 'Adults Only',        sqClass: 'sq-red',   cardClass: 'ticket-red'   },
-        children:     { label: 'Adults & Children',  sqClass: 'sq-green', cardClass: 'ticket-green' },
-        disabilities: { label: 'Incl. Disabilities', sqClass: 'sq-blue',  cardClass: 'ticket-blue'  },
+        adults:       { label: 'Adults Only',        hint: 'RED — Adults Only',        panelClass: 'scan-red',   badgeClass: 'badge-red'   },
+        children:     { label: 'Adults & Children',  hint: 'GREEN — Adults & Children', panelClass: 'scan-green', badgeClass: 'badge-green' },
+        disabilities: { label: 'Incl. Disabilities', hint: 'BLUE — Incl. Disabilities', panelClass: 'scan-blue',  badgeClass: 'badge-blue'  },
       };
 
       const c = config[selectedType];
@@ -685,14 +663,15 @@
       const [y, m, d] = date.split('-');
       const fmt = d && m ? `${d}/${m}/${y}` : '—';
 
-      document.getElementById('t-name').textContent  = nameVal;
-      document.getElementById('t-date').textContent  = fmt;
-      document.getElementById('t-count').textContent = personCount + (personCount === 1 ? ' person' : ' people');
-      document.getElementById('t-id').textContent    = passId;
+      document.getElementById('t-name').textContent      = nameVal;
+      document.getElementById('t-date').textContent      = fmt;
+      document.getElementById('t-count').textContent     = personCount + (personCount === 1 ? ' person' : ' people');
+      document.getElementById('t-id').textContent        = passId;
       document.getElementById('ticket-badge').textContent = c.label;
+      document.getElementById('t-color-hint').textContent = c.hint;
 
-      document.getElementById('color-square').className = 'color-square ' + c.sqClass;
-      document.getElementById('ticket-card').className  = 'ticket-card '  + c.cardClass;
+      document.getElementById('scan-panel').className   = 'scan-panel ' + c.panelClass;
+      document.getElementById('ticket-badge').className = 'ticket-type-badge ' + c.badgeClass;
 
       goTo('screen-ticket');
 
