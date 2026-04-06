@@ -85,7 +85,6 @@
       object-position: center 30%;
       filter: brightness(0.45) grayscale(20%);
     }
-    /* Fade edges into white background */
     .hero::after {
       content: '';
       position: absolute;
@@ -175,6 +174,51 @@
       -webkit-appearance: none;
     }
     .form-group input:focus { border-color: var(--accent); }
+    .form-group input.input-error { border-color: #cc0000; }
+
+    .field-error {
+      font-size: 11px;
+      color: #cc0000;
+      display: none;
+      padding-left: 2px;
+    }
+    .field-error.visible { display: block; }
+
+    /* ─── Stepper ─────────────────────────────────────────── */
+    .stepper {
+      display: flex;
+      align-items: center;
+      background: var(--surface);
+      border: 1px solid #cccccc;
+      border-radius: var(--radius);
+      overflow: hidden;
+      height: 52px;
+      width: 100%;
+    }
+    .stepper-btn {
+      width: 56px;
+      height: 52px;
+      background: transparent;
+      border: none;
+      font-size: 24px;
+      color: var(--accent);
+      cursor: pointer;
+      font-weight: 700;
+      transition: background 0.15s;
+      flex-shrink: 0;
+      -webkit-tap-highlight-color: transparent;
+      line-height: 1;
+    }
+    .stepper-btn:active { background: var(--surface2); }
+    .stepper-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+    .stepper-count {
+      flex: 1;
+      text-align: center;
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text);
+      user-select: none;
+    }
 
     /* ─── Choice cards ────────────────────────────────────── */
     .choice-label {
@@ -214,7 +258,6 @@
       border-radius: 50%;
       flex-shrink: 0;
     }
-    /* All three colors remain red/green/blue for the ticket pass logic */
     .choice-dot.red   { background: #990000; box-shadow: 0 0 10px #99000070; }
     .choice-dot.green { background: #2dc653; box-shadow: 0 0 10px #2dc65370; }
     .choice-dot.blue  { background: #4895ef; box-shadow: 0 0 10px #4895ef70; }
@@ -226,7 +269,7 @@
     .card-green.selected { border-color: #2dc653; }
     .card-blue.selected  { border-color: #4895ef; }
 
-    .choice-text h3 { font-size: 15px; font-weight: 600; margin-bottom: 2px; color: #fff; }
+    .choice-text h3 { font-size: 15px; font-weight: 600; margin-bottom: 2px; color: var(--text); }
     .choice-text p  { font-size: 12px; color: var(--text-muted); line-height: 1.4; }
 
     /* ─── Buttons ─────────────────────────────────────────── */
@@ -252,6 +295,13 @@
       color: var(--text-muted);
       font-size: 14px;
     }
+    .btn-save {
+      background: transparent;
+      border: 1.5px solid var(--accent);
+      color: var(--accent);
+      font-size: 15px;
+    }
+    .btn-save:hover { background: #99000010; }
 
     /* ─── Ticket ──────────────────────────────────────────── */
     .ticket-wrapper {
@@ -315,6 +365,7 @@
       inset: 0;
       border-radius: 18px;
       background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, transparent 55%);
+      pointer-events: none;
     }
     .color-square .scan-hint {
       position: absolute;
@@ -323,6 +374,22 @@
       color: rgba(255,255,255,0.45);
       letter-spacing: 0.4px;
       white-space: nowrap;
+    }
+
+    .qr-wrapper {
+      background: #fff;
+      border-radius: 10px;
+      padding: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      z-index: 1;
+    }
+    .qr-wrapper img {
+      display: block;
+      width: 140px;
+      height: 140px;
     }
 
     .ticket-divider {
@@ -461,16 +528,22 @@
   <div class="screen" id="screen-info">
     <div class="form-wrap">
       <div class="form-group">
-        <label>Visitor Name</label>
-        <input type="text" id="name" placeholder="e.g. Maria Papadopoulou" autocomplete="name" />
+        <label for="name">Visitor Name</label>
+        <input type="text" id="name" placeholder="e.g. Maria Papadopoulou"
+               autocomplete="name" oninput="checkForm()" />
+        <span class="field-error" id="name-error">Please enter your name to continue</span>
       </div>
       <div class="form-group">
-        <label>Date of Visit</label>
+        <label for="visit-date">Date of Visit</label>
         <input type="date" id="visit-date" />
       </div>
       <div class="form-group">
         <label>Number of People</label>
-        <input type="number" id="count" placeholder="e.g. 4" min="1" max="99" />
+        <div class="stepper">
+          <button class="stepper-btn" id="count-minus" onclick="changeCount(-1)" disabled>&#8722;</button>
+          <span class="stepper-count" id="count-display">1</span>
+          <button class="stepper-btn" id="count-plus" onclick="changeCount(1)">&#43;</button>
+        </div>
       </div>
 
       <div class="choice-label">Select your group type</div>
@@ -493,8 +566,8 @@
         <div class="choice-card card-blue" data-type="disabilities" onclick="selectType(this)">
           <div class="choice-dot blue"></div>
           <div class="choice-text">
-            <h3>Adults, Children &amp; Disabilities</h3>
-            <p>Group includes persons with disabilities</p>
+            <h3>Adults, Children &amp; Visitors with Disabilities</h3>
+            <p>Group includes visitors with disabilities</p>
           </div>
         </div>
       </div>
@@ -515,7 +588,10 @@
 
         <div class="color-square-container">
           <div class="color-square" id="color-square">
-            <span class="scan-hint">Hold up to Husky AI Lens camera</span>
+            <div class="qr-wrapper">
+              <img id="qr-img" src="" alt="QR Code" width="140" height="140" />
+            </div>
+            <span class="scan-hint">Scan QR &middot; Hold up to entrance scanner</span>
           </div>
         </div>
 
@@ -541,22 +617,28 @@
         </div>
       </div>
 
+      <button class="btn btn-save" onclick="saveTicket()">&#8681; Save Ticket</button>
+
       <div class="instructions">
         <h4>How to enter</h4>
         <ol>
-          <li>Show this screen to the Husky AI Lens camera at the entrance.</li>
+          <li>Show this screen to the scanner at the entrance.</li>
           <li>Keep brightness at maximum for best scan results.</li>
-          <li>The color of the square identifies your group category automatically.</li>
+          <li>The QR code and color identify your group category automatically.</li>
           <li>Wait for the green confirmation light, then proceed inside.</li>
         </ol>
       </div>
 
-      <button class="btn btn-ghost" onclick="reset()">&larr; New Ticket</button>
+      <button class="btn btn-ghost" onclick="resetApp()">&larr; New Ticket</button>
     </div>
   </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script>
     let selectedType = null;
+    let personCount = 1;
+    let currentPassId = '';
 
     const dateInput = document.getElementById('visit-date');
     const today = new Date().toISOString().split('T')[0];
@@ -573,39 +655,73 @@
       window.scrollTo(0, 0);
     }
 
+    function changeCount(delta) {
+      personCount = Math.max(1, Math.min(99, personCount + delta));
+      document.getElementById('count-display').textContent = personCount;
+      document.getElementById('count-minus').disabled = personCount <= 1;
+      document.getElementById('count-plus').disabled = personCount >= 99;
+    }
+
     function selectType(card) {
       document.querySelectorAll('.choice-card').forEach(c => c.classList.remove('selected'));
       card.classList.add('selected');
       selectedType = card.dataset.type;
-      document.getElementById('btn-generate').disabled = false;
+      checkForm();
+    }
+
+    function checkForm() {
+      const nameVal = document.getElementById('name').value.trim();
+      const nameInput = document.getElementById('name');
+      const nameError = document.getElementById('name-error');
+      if (nameVal) {
+        nameInput.classList.remove('input-error');
+        nameError.classList.remove('visible');
+      }
+      document.getElementById('btn-generate').disabled = !(nameVal && selectedType);
     }
 
     function generateTicket() {
-      const name  = document.getElementById('name').value.trim() || 'Guest';
-      const date  = document.getElementById('visit-date').value;
-      const count = document.getElementById('count').value || '1';
+      const nameVal = document.getElementById('name').value.trim();
+      if (!nameVal) {
+        document.getElementById('name').classList.add('input-error');
+        document.getElementById('name-error').classList.add('visible');
+        document.getElementById('name').focus();
+        return;
+      }
+
+      const date = document.getElementById('visit-date').value;
 
       const config = {
-        adults:       { label: 'Adults Only',          sqClass: 'sq-red',   cardClass: 'ticket-red'   },
-        children:     { label: 'Adults & Children',    sqClass: 'sq-green', cardClass: 'ticket-green' },
-        disabilities: { label: 'Incl. Disabilities',   sqClass: 'sq-blue',  cardClass: 'ticket-blue'  },
+        adults:       { label: 'Adults Only',       sqClass: 'sq-red',   cardClass: 'ticket-red'   },
+        children:     { label: 'Adults & Children',  sqClass: 'sq-green', cardClass: 'ticket-green' },
+        disabilities: { label: 'Incl. Disabilities', sqClass: 'sq-blue',  cardClass: 'ticket-blue'  },
       };
 
       const c = config[selectedType];
-      const passId = 'EQ-' + Math.random().toString(36).substring(2, 7).toUpperCase();
+      currentPassId = 'EQ-' + Math.random().toString(36).substring(2, 7).toUpperCase();
       const [y, m, d] = date.split('-');
       const fmt = d && m ? `${d}/${m}/${y}` : '—';
 
-      document.getElementById('t-name').textContent  = name;
+      document.getElementById('t-name').textContent  = nameVal;
       document.getElementById('t-date').textContent  = fmt;
-      document.getElementById('t-count').textContent = count + (count == 1 ? ' person' : ' people');
-      document.getElementById('t-id').textContent    = passId;
+      document.getElementById('t-count').textContent = personCount + (personCount === 1 ? ' person' : ' people');
+      document.getElementById('t-id').textContent    = currentPassId;
       document.getElementById('ticket-badge').textContent = c.label;
 
       const sq   = document.getElementById('color-square');
       const card = document.getElementById('ticket-card');
       sq.className   = 'color-square ' + c.sqClass;
       card.className = 'ticket-card '  + c.cardClass;
+
+      // Generate real QR code encoding pass data
+      const qrData = `EQUALL:${currentPassId};NAME:${nameVal};DATE:${date};TYPE:${selectedType};SIZE:${personCount}`;
+      QRCode.toDataURL(qrData, {
+        width: 140,
+        margin: 1,
+        color: { dark: '#000000', light: '#ffffff' }
+      }, (err, url) => {
+        if (!err) document.getElementById('qr-img').src = url;
+      });
 
       goTo('screen-ticket');
 
@@ -614,12 +730,35 @@
       }
     }
 
-    function reset() {
+    async function saveTicket() {
+      const card = document.getElementById('ticket-card');
+      try {
+        const canvas = await html2canvas(card, {
+          scale: 2,
+          useCORS: true,
+          backgroundColor: null,
+          logging: false
+        });
+        const link = document.createElement('a');
+        link.download = `equall-pass-${currentPassId}.png`;
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+      } catch (e) {
+        alert('Could not save automatically. Please take a screenshot to keep your ticket.');
+      }
+    }
+
+    function resetApp() {
       selectedType = null;
+      personCount = 1;
       document.querySelectorAll('.choice-card').forEach(c => c.classList.remove('selected'));
       document.getElementById('btn-generate').disabled = true;
       document.getElementById('name').value = '';
-      document.getElementById('count').value = '';
+      document.getElementById('name').classList.remove('input-error');
+      document.getElementById('name-error').classList.remove('visible');
+      document.getElementById('count-display').textContent = '1';
+      document.getElementById('count-minus').disabled = true;
+      document.getElementById('count-plus').disabled = false;
       document.getElementById('visit-date').value = today;
       goTo('screen-welcome');
     }
