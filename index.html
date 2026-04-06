@@ -3,19 +3,19 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <meta name="theme-color" content="#0a0a0a" />
+  <meta name="theme-color" content="#ffffff" />
   <title>Equall Museum · Entry Pass</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg: #0a0a0a;
-      --surface: #161616;
-      --surface2: #1f1f1f;
+      --bg: #ffffff;
+      --surface: #f2f2f2;
+      --surface2: #e8e8e8;
       --accent: #990000;
       --accent-dark: #6b0000;
-      --text: #ffffff;
-      --text-muted: #888888;
+      --text: #111111;
+      --text-muted: #666666;
       --radius: 16px;
     }
 
@@ -34,10 +34,10 @@
     /* ─── Header ─────────────────────────────────────────── */
     .header {
       width: 100%;
-      background: #0a0a0a;
+      background: #ffffff;
       padding: 20px 24px 16px;
       text-align: center;
-      border-bottom: 1px solid #ffffff0f;
+      border-bottom: 1px solid #e0e0e0;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -75,7 +75,7 @@
     .hero {
       width: 100%;
       position: relative;
-      height: 220px;
+      height: 260px;
       overflow: hidden;
     }
     .hero img {
@@ -83,7 +83,17 @@
       height: 100%;
       object-fit: cover;
       object-position: center 30%;
-      filter: brightness(0.55);
+      filter: brightness(0.45) grayscale(20%);
+    }
+    /* Fade edges into white background */
+    .hero::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(to bottom, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 30%, rgba(255,255,255,0) 55%, rgba(255,255,255,1) 100%),
+        linear-gradient(to right,  rgba(255,255,255,0.5) 0%, rgba(255,255,255,0) 18%, rgba(255,255,255,0) 82%, rgba(255,255,255,0.5) 100%);
+      pointer-events: none;
     }
     .hero-text {
       position: absolute;
@@ -92,23 +102,27 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 6px;
+      gap: 8px;
       padding: 0 24px;
+      padding-bottom: 30px;
+      z-index: 1;
     }
     .hero-text h2 {
-      font-size: 24px;
+      font-size: 26px;
       font-weight: 800;
       text-align: center;
       line-height: 1.2;
       letter-spacing: 0.3px;
       color: #fff;
+      text-shadow: 0 2px 12px rgba(0,0,0,0.6);
     }
     .hero-text span {
-      font-size: 12px;
-      color: var(--accent);
+      font-size: 11px;
+      color: #ff6060;
       font-weight: 700;
-      letter-spacing: 2px;
+      letter-spacing: 2.5px;
       text-transform: uppercase;
+      text-shadow: 0 1px 6px rgba(0,0,0,0.8);
     }
 
     .welcome-body {
@@ -152,7 +166,7 @@
       width: 100%;
       padding: 14px 16px;
       background: var(--surface);
-      border: 1px solid #ffffff12;
+      border: 1px solid #cccccc;
       border-radius: var(--radius);
       color: var(--text);
       font-size: 16px;
@@ -180,7 +194,7 @@
     .choice-card {
       width: 100%;
       background: var(--surface);
-      border: 1.5px solid #ffffff10;
+      border: 1.5px solid #dddddd;
       border-radius: var(--radius);
       padding: 16px 18px;
       display: flex;
@@ -234,7 +248,7 @@
     .btn-primary:not(:disabled):hover { background: var(--accent-dark); }
     .btn-ghost {
       background: transparent;
-      border: 1px solid #ffffff18;
+      border: 1px solid #cccccc;
       color: var(--text-muted);
       font-size: 14px;
     }
@@ -359,7 +373,7 @@
     .instructions {
       background: var(--surface);
       border-radius: var(--radius);
-      border: 1px solid #ffffff0a;
+      border: 1px solid #dddddd;
       padding: 16px 18px;
       width: 100%;
       max-width: 340px;
@@ -395,11 +409,11 @@
     .step-dot {
       width: 8px; height: 8px;
       border-radius: 50%;
-      background: #ffffff18;
+      background: #cccccc;
       transition: background 0.3s, width 0.3s;
     }
     .step-dot.active { background: var(--accent); width: 24px; border-radius: 4px; }
-    .step-dot.done   { background: #ffffff35; }
+    .step-dot.done   { background: #aaaaaa; }
 
     /* ─── Red accent line under header ───────────────────── */
     .accent-line {
