@@ -346,31 +346,8 @@
     /* ── Big scannable color panel ── */
     .scan-panel {
       width: 100%;
-      aspect-ratio: 1 / 1;        /* perfect square, full width */
-      max-height: 75vw;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 14px;
-      position: relative;
-      transition: background 0.3s;
-    }
-    .scan-panel-label {
-      font-size: 13px;
-      font-weight: 700;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      color: rgba(255,255,255,0.75);
-    }
-    .scan-panel-icon {
-      font-size: 48px;
-      opacity: 0.85;
-    }
-    .scan-panel-hint {
-      font-size: 12px;
-      color: rgba(255,255,255,0.55);
-      letter-spacing: 0.5px;
+      aspect-ratio: 1 / 1;
+      display: block;
     }
 
     /* Color states — pure vivid for camera recognition */
@@ -559,11 +536,7 @@
     <div class="ticket-wrapper">
 
       <!-- Full-width color panel for Husky AI lens -->
-      <div class="scan-panel" id="scan-panel">
-        <div class="scan-panel-icon">📷</div>
-        <div class="scan-panel-label">Hold up to Husky AI Lens</div>
-        <div class="scan-panel-hint" id="t-color-hint">&mdash;</div>
-      </div>
+      <div class="scan-panel" id="scan-panel"></div>
 
       <!-- Ticket detail strip -->
       <div class="ticket-strip">
@@ -668,7 +641,6 @@
       document.getElementById('t-count').textContent     = personCount + (personCount === 1 ? ' person' : ' people');
       document.getElementById('t-id').textContent        = passId;
       document.getElementById('ticket-badge').textContent = c.label;
-      document.getElementById('t-color-hint').textContent = c.hint;
 
       document.getElementById('scan-panel').className   = 'scan-panel ' + c.panelClass;
       document.getElementById('ticket-badge').className = 'ticket-type-badge ' + c.badgeClass;
