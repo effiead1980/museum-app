@@ -291,15 +291,15 @@
       flex-shrink: 0;
     }
     .choice-dot.red   { background: #990000; box-shadow: 0 0 10px #99000070; }
-    .choice-dot.green { background: #4895ef; box-shadow: 0 0 10px #4895ef70; }
-    .choice-dot.blue  { background: #2dc653; box-shadow: 0 0 10px #2dc65370; }
+    .choice-dot.green { background: #00aa33; box-shadow: 0 0 10px #00aa3370; }
+    .choice-dot.blue  { background: #0066dd; box-shadow: 0 0 10px #0066dd70; }
 
     .card-red   { border-color: #99000030; }
-    .card-green { border-color: #4895ef30; }
-    .card-blue  { border-color: #2dc65330; }
+    .card-green { border-color: #00aa3330; }
+    .card-blue  { border-color: #0066dd30; }
     .card-red.selected   { border-color: #990000; }
-    .card-green.selected { border-color: #4895ef; }
-    .card-blue.selected  { border-color: #2dc653; }
+    .card-green.selected { border-color: #00aa33; }
+    .card-blue.selected  { border-color: #0066dd; }
 
     .choice-text h3 { font-size: 15px; font-weight: 600; margin-bottom: 2px; color: var(--text); }
     .choice-text p  { font-size: 12px; color: var(--text-muted); line-height: 1.4; }
@@ -510,15 +510,15 @@
             <p>Group consisting entirely of adults (18+)</p>
           </div>
         </div>
-        <div class="choice-card card-green" data-type="children" onclick="selectType(this)">
-          <div class="choice-dot green"></div>
+        <div class="choice-card card-blue" data-type="children" onclick="selectType(this)">
+          <div class="choice-dot blue"></div>
           <div class="choice-text">
             <h3>Adults &amp; Children</h3>
             <p>Mixed group of adults and minors</p>
           </div>
         </div>
-        <div class="choice-card card-blue" data-type="disabilities" onclick="selectType(this)">
-          <div class="choice-dot blue"></div>
+        <div class="choice-card card-green" data-type="disabilities" onclick="selectType(this)">
+          <div class="choice-dot green"></div>
           <div class="choice-text">
             <h3>Adults, Children &amp; Disabilities</h3>
             <p>Group includes visitors with disabilities</p>
