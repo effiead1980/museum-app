@@ -291,15 +291,15 @@
       flex-shrink: 0;
     }
     .choice-dot.red   { background: #990000; box-shadow: 0 0 10px #99000070; }
-    .choice-dot.green { background: #2dc653; box-shadow: 0 0 10px #2dc65370; }
-    .choice-dot.blue  { background: #4895ef; box-shadow: 0 0 10px #4895ef70; }
+    .choice-dot.green { background: #4895ef; box-shadow: 0 0 10px #4895ef70; }
+    .choice-dot.blue  { background: #2dc653; box-shadow: 0 0 10px #2dc65370; }
 
     .card-red   { border-color: #99000030; }
-    .card-green { border-color: #2dc65330; }
-    .card-blue  { border-color: #4895ef30; }
+    .card-green { border-color: #4895ef30; }
+    .card-blue  { border-color: #2dc65330; }
     .card-red.selected   { border-color: #990000; }
-    .card-green.selected { border-color: #2dc653; }
-    .card-blue.selected  { border-color: #4895ef; }
+    .card-green.selected { border-color: #4895ef; }
+    .card-blue.selected  { border-color: #2dc653; }
 
     .choice-text h3 { font-size: 15px; font-weight: 600; margin-bottom: 2px; color: var(--text); }
     .choice-text p  { font-size: 12px; color: var(--text-muted); line-height: 1.4; }
@@ -626,9 +626,9 @@
 
       const date = document.getElementById('visit-date').value;
       const config = {
-        adults:       { label: 'Adults Only',        hint: 'RED — Adults Only',        panelClass: 'scan-red',   badgeClass: 'badge-red'   },
-        children:     { label: 'Adults & Children',  hint: 'GREEN — Adults & Children', panelClass: 'scan-green', badgeClass: 'badge-green' },
-        disabilities: { label: 'Incl. Disabilities', hint: 'BLUE — Incl. Disabilities', panelClass: 'scan-blue',  badgeClass: 'badge-blue'  },
+        adults:       { label: 'Adults Only',        panelClass: 'scan-red',   badgeClass: 'badge-red'   },
+        children:     { label: 'Adults & Children',  panelClass: 'scan-blue',  badgeClass: 'badge-blue'  },
+        disabilities: { label: 'Incl. Disabilities', panelClass: 'scan-green', badgeClass: 'badge-green' },
       };
 
       const c = config[selectedType];
