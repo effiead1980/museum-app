@@ -297,8 +297,8 @@
       background: linear-gradient(to right, #990000 50%, #00aa33 50%);
       box-shadow: 0 0 10px #66666670;
     }
-    .choice-dot.blue-red {
-      background: linear-gradient(to right, #0066dd 50%, #990000 50%);
+    .choice-dot.blue-green {
+      background: linear-gradient(to right, #0066dd 50%, #00aa33 50%);
       box-shadow: 0 0 10px #66666670;
     }
 
@@ -306,12 +306,11 @@
     .card-green { border-color: #00aa3330; }
     .card-blue  { border-color: #0066dd30; }
     .card-red-green { border-color: #66666630; }
-    .card-blue-red  { border-color: #66666630; }
-    .card-red.selected   { border-color: #990000; }
-    .card-green.selected { border-color: #00aa33; }
-    .card-blue.selected  { border-color: #0066dd; }
-    .card-red-green.selected { border-color: #666666; }
-    .card-blue-red.selected  { border-color: #666666; }
+    .card-blue-green { border-color: #66666630; }
+    .card-red.selected        { border-color: #990000; }
+    .card-blue.selected       { border-color: #0066dd; }
+    .card-red-green.selected  { border-color: #666666; }
+    .card-blue-green.selected { border-color: #666666; }
 
     .choice-text h3 { font-size: 15px; font-weight: 600; margin-bottom: 2px; color: var(--text); }
     .choice-text p  { font-size: 12px; color: var(--text-muted); line-height: 1.4; }
@@ -368,7 +367,7 @@
     .scan-blue  { background: #0066dd; }
     /* Dual-color panels split horizontally (top/bottom) */
     .scan-red-green { background: linear-gradient(to bottom, #dd0000 50%, #00aa33 50%); }
-    .scan-blue-red  { background: linear-gradient(to bottom, #0066dd 50%, #dd0000 50%); }
+    .scan-blue-green { background: linear-gradient(to bottom, #0066dd 50%, #00aa33 50%); }
 
     /* ── Ticket detail strip below the panel ── */
     .ticket-strip {
@@ -401,7 +400,7 @@
     .badge-green { background: #00aa33; }
     .badge-blue  { background: #0066dd; }
     .badge-red-green { background: linear-gradient(to right, #dd0000 50%, #00aa33 50%); }
-    .badge-blue-red  { background: linear-gradient(to right, #0066dd 50%, #dd0000 50%); }
+    .badge-blue-green { background: linear-gradient(to right, #0066dd 50%, #00aa33 50%); }
 
     .ticket-fields {
       display: grid;
@@ -534,13 +533,6 @@
             <p>Mixed group of adults and minors</p>
           </div>
         </div>
-        <div class="choice-card card-green" data-type="disabilities" onclick="selectType(this)">
-          <div class="choice-dot green"></div>
-          <div class="choice-text">
-            <h3>Adults, Children &amp; Disabilities</h3>
-            <p>Group includes visitors with disabilities</p>
-          </div>
-        </div>
         <div class="choice-card card-red-green" data-type="adults-disabilities" onclick="selectType(this)">
           <div class="choice-dot red-green"></div>
           <div class="choice-text">
@@ -548,8 +540,8 @@
             <p>Adults including visitors with disabilities</p>
           </div>
         </div>
-        <div class="choice-card card-blue-red" data-type="children-disabilities" onclick="selectType(this)">
-          <div class="choice-dot blue-red"></div>
+        <div class="choice-card card-blue-green" data-type="children-disabilities" onclick="selectType(this)">
+          <div class="choice-dot blue-green"></div>
           <div class="choice-text">
             <h3>Children &amp; Disabilities</h3>
             <p>Children including visitors with disabilities</p>
@@ -657,11 +649,10 @@
 
       const date = document.getElementById('visit-date').value;
       const config = {
-        adults:                  { label: 'Adults Only',           panelClass: 'scan-red',       badgeClass: 'badge-red'       },
-        children:                { label: 'Adults & Children',     panelClass: 'scan-blue',      badgeClass: 'badge-blue'      },
-        disabilities:            { label: 'Incl. Disabilities',    panelClass: 'scan-green',     badgeClass: 'badge-green'     },
-        'adults-disabilities':   { label: 'Adults & Disabilities', panelClass: 'scan-red-green', badgeClass: 'badge-red-green' },
-        'children-disabilities': { label: 'Children & Disabilities', panelClass: 'scan-blue-red',  badgeClass: 'badge-blue-red'  },
+        'adults':               { label: 'Adults Only',             panelClass: 'scan-red',        badgeClass: 'badge-red'        },
+        'children':             { label: 'Adults & Children',      panelClass: 'scan-blue',       badgeClass: 'badge-blue'       },
+        'adults-disabilities':  { label: 'Adults & Disabilities',  panelClass: 'scan-red-green',  badgeClass: 'badge-red-green'  },
+        'children-disabilities':{ label: 'Children & Disabilities',panelClass: 'scan-blue-green', badgeClass: 'badge-blue-green' },
       };
 
       const c = config[selectedType];
