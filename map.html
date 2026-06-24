@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#ffffff" />
+  <title>Equall Museum · Map</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #ffffff;
+      --surface: #f2f2f2;
+      --surface2: #e8e8e8;
+      --accent: #990000;
+      --accent-dark: #6b0000;
+      --text: #111111;
+      --text-muted: #666666;
+      --radius: 16px;
+      --safe-top: env(safe-area-inset-top, 0px);
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+    }
+
+    html { height: 100%; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100svh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-top: var(--safe-top);
+      padding-bottom: calc(40px + var(--safe-bottom));
+      -webkit-text-size-adjust: 100%;
+    }
+
+    /* ─── Header ─────────────────────────────────────────── */
+    .header {
+      width: 100%;
+      background: #ffffff;
+      padding: 16px 24px 12px;
+      text-align: center;
+      border-bottom: 1px solid #e0e0e0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    .header img.logo {
+      width: clamp(72px, 20vw, 96px);
+      height: clamp(72px, 20vw, 96px);
+      object-fit: contain;
+    }
+    .header p {
+      font-size: clamp(11px, 3vw, 13px);
+      color: var(--text-muted);
+      letter-spacing: 0.6px;
+    }
+
+    .accent-line {
+      width: 100%;
+      height: 2px;
+      background: var(--accent);
+      flex-shrink: 0;
+    }
+
+    /* ─── Page title ─────────────────────────────────────── */
+    .page-title {
+      width: 100%;
+      max-width: 480px;
+      padding: 20px 24px 0;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .page-title h1 {
+      font-size: clamp(20px, 5vw, 24px);
+      font-weight: 800;
+      color: var(--text);
+    }
+    .page-title p {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    /* ─── Map container ──────────────────────────────────── */
+    .map-wrap {
+      width: 100%;
+      max-width: 480px;
+      padding: 16px 16px 0;
+      position: relative;
+    }
+
+    .map-container {
+      width: 100%;
+      border-radius: var(--radius);
+      overflow: hidden;
+      position: relative;
+      border: 1.5px solid #e0e0e0;
+      background: #1a1a2e;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.12);
+    }
+
+    .map-container img.museum-img {
+      width: 100%;
+      display: block;
+      object-fit: cover;
+    }
+
+    /* SVG overlay for room highlights */
+    .map-overlay {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+    }
+
+    /* ─── NFC status card ────────────────────────────────── */
+    .nfc-card {
+      width: 100%;
+      max-width: 480px;
+      margin: 16px 16px 0;
+      background: var(--surface);
+      border: 1.5px solid #dddddd;
+      border-radius: var(--radius);
+      padding: 18px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .nfc-status-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .nfc-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: var(--surface2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 22px;
+      transition: background 0.3s;
+    }
+    .nfc-icon.active   { background: #990000; }
+    .nfc-icon.success  { background: #00aa33; animation: pulse 1.5s ease-in-out; }
+    .nfc-icon.scanning { background: #0066dd; animation: scanPulse 1.2s ease-in-out infinite; }
+
+    @keyframes pulse {
+      0%   { box-shadow: 0 0 0 0 rgba(0,170,51,0.5); }
+      70%  { box-shadow: 0 0 0 16px rgba(0,170,51,0); }
+      100% { box-shadow: 0 0 0 0 rgba(0,170,51,0); }
+    }
+    @keyframes scanPulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(0,102,221,0.5); }
+      50%       { box-shadow: 0 0 0 12px rgba(0,102,221,0); }
+    }
+
+    .nfc-text h3 {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 3px;
+    }
+    .nfc-text p {
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.45;
+    }
+
+    /* ─── You are here banner ────────────────────────────── */
+    .location-banner {
+      display: none;
+      background: #00aa33;
+      color: #fff;
+      border-radius: 10px;
+      padding: 12px 16px;
+      font-size: 14px;
+      font-weight: 700;
+      align-items: center;
+      gap: 10px;
+    }
+    .location-banner.visible { display: flex; }
+    .location-banner span { font-size: 20px; }
+
+    /* ─── Rooms legend ───────────────────────────────────── */
+    .legend {
+      width: 100%;
+      max-width: 480px;
+      padding: 16px 16px 0;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .legend-title {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-muted);
+      padding: 0 4px;
+    }
+
+    .legend-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: var(--surface);
+      border: 1.5px solid #dddddd;
+      border-radius: 12px;
+      padding: 12px 16px;
+      transition: border-color 0.3s, background 0.3s;
+    }
+    .legend-item.current {
+      border-color: #00aa33;
+      background: #f0fff4;
+    }
+
+    .legend-dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .legend-info h4 { font-size: 14px; font-weight: 600; color: var(--text); }
+    .legend-info p  { font-size: 11px; color: var(--text-muted); margin-top: 1px; }
+
+    .you-badge {
+      margin-left: auto;
+      background: #00aa33;
+      color: #fff;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 20px;
+      letter-spacing: 0.5px;
+      white-space: nowrap;
+    }
+
+    /* ─── Buttons ─────────────────────────────────────────── */
+    .btn {
+      width: 100%;
+      padding: 16px;
+      border: none;
+      border-radius: var(--radius);
+      font-size: clamp(15px, 4vw, 17px);
+      font-weight: 700;
+      cursor: pointer;
+      letter-spacing: 0.4px;
+      transition: background 0.2s, transform 0.15s;
+      -webkit-tap-highlight-color: transparent;
+      min-height: 52px;
+    }
+    .btn:active { transform: scale(0.98); }
+    .btn-primary { background: var(--accent); color: #fff; }
+    .btn-primary:not(:disabled):active { background: var(--accent-dark); }
+    .btn-ghost {
+      background: transparent;
+      border: 1px solid #cccccc;
+      color: var(--text-muted);
+    }
+
+    .btn-wrap {
+      width: 100%;
+      max-width: 480px;
+      padding: 20px 16px 0;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    /* ─── NFC not supported ──────────────────────────────── */
+    .nfc-unsupported {
+      display: none;
+      background: #fff8e1;
+      border: 1.5px solid #f0c040;
+      border-radius: 12px;
+      padding: 12px 16px;
+      font-size: 13px;
+      color: #7a5c00;
+      line-height: 1.5;
+    }
+    .nfc-unsupported.visible { display: block; }
+
+    /* ─── Demo mode banner ───────────────────────────────── */
+    .demo-banner {
+      width: 100%;
+      max-width: 480px;
+      padding: 10px 16px 0;
+    }
+    .demo-note {
+      background: #eef2ff;
+      border: 1px solid #c7d2fe;
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-size: 12px;
+      color: #3730a3;
+      line-height: 1.5;
+    }
+
+    /* ─── Back link ──────────────────────────────────────── */
+    .back-link {
+      width: 100%;
+      max-width: 480px;
+      padding: 12px 16px 0;
+    }
+    .back-link a {
+      font-size: 13px;
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <div class="header">
+    <img class="logo" src="equall-museum-high-resolution-logo.png" alt="Equall Museum" />
+    <p>Powered by Husky AI · Museum Map</p>
+  </div>
+  <div class="accent-line"></div>
+
+  <!-- Back link -->
+  <div class="back-link">
+    <a href="index.html">&#8592; Back to Entry Pass</a>
+  </div>
+
+  <!-- Page title -->
+  <div class="page-title">
+    <h1>Museum Map</h1>
+    <p>Scan an NFC tag to see your location</p>
+  </div>
+
+  <!-- Map -->
+  <div class="map-wrap">
+    <div class="map-container">
+      <img class="museum-img" src="museum-map.jpg" alt="Equall Museum floor plan" />
+      <!-- SVG overlay: 5 ellipses over each circular room -->
+      <svg class="map-overlay" viewBox="0 0 1300 350" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
+        <!-- Room 1: Entrance (leftmost) -->
+        <ellipse id="room-svg-1" cx="155" cy="178" rx="118" ry="130"
+                 fill="none" stroke="none" stroke-width="4"
+                 style="transition: all 0.5s;" />
+        <!-- Room 2: Digital Hall -->
+        <ellipse id="room-svg-2" cx="385" cy="178" rx="118" ry="130"
+                 fill="none" stroke="none" stroke-width="4"
+                 style="transition: all 0.5s;" />
+        <!-- Room 3: Central Hall -->
+        <ellipse id="room-svg-3" cx="650" cy="178" rx="118" ry="130"
+                 fill="none" stroke="none" stroke-width="4"
+                 style="transition: all 0.5s;" />
+        <!-- Room 4: Sculpture Gallery -->
+        <ellipse id="room-svg-4" cx="900" cy="178" rx="118" ry="130"
+                 fill="none" stroke="none" stroke-width="4"
+                 style="transition: all 0.5s;" />
+        <!-- Room 5: Interactive Lab -->
+        <ellipse id="room-svg-5" cx="1145" cy="178" rx="130" ry="130"
+                 fill="none" stroke="none" stroke-width="4"
+                 style="transition: all 0.5s;" />
+
+        <!-- YOU ARE HERE pin (hidden by default) -->
+        <g id="you-pin" style="display:none; transition: all 0.4s;">
+          <circle id="pin-circle" cx="155" cy="90" r="18" fill="#00aa33" />
+          <text x="155" y="97" text-anchor="middle" font-size="18" fill="white">📍</text>
+          <text id="pin-label" x="155" y="72" text-anchor="middle" font-size="14"
+                fill="#ffffff" font-weight="700"
+                style="filter: drop-shadow(0 1px 3px rgba(0,0,0,0.8));">You are here</text>
+        </g>
+      </svg>
+    </div>
+  </div>
+
+  <!-- NFC card -->
+  <div class="nfc-card" style="margin: 16px 16px 0; width: calc(100% - 32px); max-width: 448px;">
+    <div class="nfc-status-row">
+      <div class="nfc-icon" id="nfc-icon">📡</div>
+      <div class="nfc-text">
+        <h3 id="nfc-title">Ready to Scan</h3>
+        <p id="nfc-desc">Tap the button below to activate NFC scanning, then hold your phone near an NFC tag.</p>
+      </div>
+    </div>
+    <div class="location-banner" id="location-banner">
+      <span>📍</span>
+      <span id="location-text">Entrance Hall</span>
+    </div>
+    <div class="nfc-unsupported" id="nfc-unsupported">
+      ⚠️ Your browser does not support Web NFC. Please use Chrome on Android to scan NFC tags. You can still explore the map below.
+    </div>
+  </div>
+
+  <!-- Demo banner (shown on non-Android/Chrome) -->
+  <div class="demo-banner" id="demo-banner" style="display:none;">
+    <div class="demo-note">
+      💡 <strong>Demo mode:</strong> Tap any room in the legend below to simulate an NFC scan and see how the map highlights your location.
+    </div>
+  </div>
+
+  <!-- Room legend -->
+  <div class="legend">
+    <div class="legend-title">Museum Rooms</div>
+    <div class="legend-list">
+      <div class="legend-item" id="legend-1" onclick="demoScan('room-1')">
+        <div class="legend-dot" style="background:#990000;"></div>
+        <div class="legend-info">
+          <h4>Room 1 – Entrance Hall</h4>
+          <p>Welcome desk · Information · Accessibility</p>
+        </div>
+        <span class="you-badge" id="badge-1" style="display:none;">You are here</span>
+      </div>
+      <div class="legend-item" id="legend-2" onclick="demoScan('room-2')">
+        <div class="legend-dot" style="background:#0066dd;"></div>
+        <div class="legend-info">
+          <h4>Room 2 – Digital Hall</h4>
+          <p>Screens · Escalator · Tech installations</p>
+        </div>
+        <span class="you-badge" id="badge-2" style="display:none;">You are here</span>
+      </div>
+      <div class="legend-item" id="legend-3" onclick="demoScan('room-3')">
+        <div class="legend-dot" style="background:#6600cc;"></div>
+        <div class="legend-info">
+          <h4>Room 3 – Central Hall</h4>
+          <p>Main statue · Winged Victory · AI displays</p>
+        </div>
+        <span class="you-badge" id="badge-3" style="display:none;">You are here</span>
+      </div>
+      <div class="legend-item" id="legend-4" onclick="demoScan('room-4')">
+        <div class="legend-dot" style="background:#cc6600;"></div>
+        <div class="legend-info">
+          <h4>Room 4 – Sculpture Gallery</h4>
+          <p>Classical statues · Mixed-ability access</p>
+        </div>
+        <span class="you-badge" id="badge-4" style="display:none;">You are here</span>
+      </div>
+      <div class="legend-item" id="legend-5" onclick="demoScan('room-5')">
+        <div class="legend-dot" style="background:#00aa33;"></div>
+        <div class="legend-info">
+          <h4>Room 5 – Interactive Lab</h4>
+          <p>Hands-on activities · Rooftop terrace</p>
+        </div>
+        <span class="you-badge" id="badge-5" style="display:none;">You are here</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scan button -->
+  <div class="btn-wrap">
+    <button class="btn btn-primary" id="btn-scan" onclick="startNFC()">📡 Scan NFC Tag</button>
+    <a href="index.html" style="text-decoration:none;">
+      <button class="btn btn-ghost" style="width:100%;">&#8592; Back to Entry Pass</button>
+    </a>
+  </div>
+
+  <script>
+    // ─── Room data ────────────────────────────────────────
+    const rooms = {
+      'room-1': { name: 'Room 1 – Entrance Hall',   svgId: 'room-svg-1', cx: 155, color: '#990000',  legendId: 'legend-1', badgeId: 'badge-1' },
+      'room-2': { name: 'Room 2 – Digital Hall',    svgId: 'room-svg-2', cx: 385, color: '#0066dd',  legendId: 'legend-2', badgeId: 'badge-2' },
+      'room-3': { name: 'Room 3 – Central Hall',    svgId: 'room-svg-3', cx: 650, color: '#6600cc',  legendId: 'legend-3', badgeId: 'badge-3' },
+      'room-4': { name: 'Room 4 – Sculpture Gallery',svgId:'room-svg-4', cx: 900, color: '#cc6600',  legendId: 'legend-4', badgeId: 'badge-4' },
+      'room-5': { name: 'Room 5 – Interactive Lab', svgId: 'room-svg-5', cx:1145, color: '#00aa33',  legendId: 'legend-5', badgeId: 'badge-5' },
+    };
+
+    let currentRoom = null;
+    let nfcReader  = null;
+    let nfcSupported = ('NDEFReader' in window);
+
+    // Show demo banner if NFC not supported
+    if (!nfcSupported) {
+      document.getElementById('demo-banner').style.display = 'block';
+    }
+
+    // ─── Highlight room on map ────────────────────────────
+    function highlightRoom(roomKey) {
+      // Clear previous
+      if (currentRoom) {
+        const prev = rooms[currentRoom];
+        const prevEl = document.getElementById(prev.svgId);
+        prevEl.setAttribute('fill', 'none');
+        prevEl.setAttribute('stroke', 'none');
+        document.getElementById(prev.legendId).classList.remove('current');
+        document.getElementById(prev.badgeId).style.display = 'none';
+      }
+
+      currentRoom = roomKey;
+      const r = rooms[roomKey];
+
+      // Highlight SVG ellipse
+      const el = document.getElementById(r.svgId);
+      el.setAttribute('fill', r.color + '33');      // 20% opacity fill
+      el.setAttribute('stroke', r.color);
+      el.setAttribute('stroke-width', '5');
+
+      // Move YOU ARE HERE pin
+      const pin    = document.getElementById('you-pin');
+      const pinCirc= document.getElementById('pin-circle');
+      const pinLbl = document.getElementById('pin-label');
+      pin.style.display = 'block';
+      pinCirc.setAttribute('cx', r.cx);
+      pinCirc.setAttribute('cy', '90');
+      pinLbl.setAttribute('x', r.cx);
+
+      // Legend highlight
+      document.getElementById(r.legendId).classList.add('current');
+      document.getElementById(r.badgeId).style.display = 'inline-block';
+
+      // Scroll legend item into view
+      document.getElementById(r.legendId).scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+      // Banner
+      const banner = document.getElementById('location-banner');
+      banner.classList.add('visible');
+      document.getElementById('location-text').textContent = r.name;
+
+      // NFC status
+      setNFCStatus('success', '✅', 'Location found!', r.name + ' — see your position on the map above.');
+    }
+
+    // ─── Status helper ────────────────────────────────────
+    function setNFCStatus(state, icon, title, desc) {
+      const iconEl = document.getElementById('nfc-icon');
+      iconEl.textContent = icon;
+      iconEl.className = 'nfc-icon ' + state;
+      document.getElementById('nfc-title').textContent = title;
+      document.getElementById('nfc-desc').textContent  = desc;
+    }
+
+    // ─── Demo mode (click on legend) ─────────────────────
+    function demoScan(roomKey) {
+      if (!nfcSupported) {
+        highlightRoom(roomKey);
+      }
+    }
+
+    // ─── Real NFC scan ────────────────────────────────────
+    async function startNFC() {
+      if (!nfcSupported) {
+        document.getElementById('nfc-unsupported').classList.add('visible');
+        setNFCStatus('', '⚠️', 'NFC not supported', 'Use Chrome on Android. Try demo mode by tapping a room below.');
+        return;
+      }
+
+      try {
+        setNFCStatus('scanning', '📡', 'Scanning…', 'Hold your phone close to an NFC tag in the museum.');
+        document.getElementById('btn-scan').disabled = true;
+
+        nfcReader = new NDEFReader();
+        await nfcReader.scan();
+
+        nfcReader.addEventListener('reading', ({ message }) => {
+          let roomKey = null;
+
+          for (const record of message.records) {
+            if (record.recordType === 'text') {
+              const decoder = new TextDecoder(record.encoding || 'utf-8');
+              const text = decoder.decode(record.data).trim().toLowerCase();
+              // Match tag payload to room key, e.g. "room-1", "entrance", etc.
+              if (text.includes('room-1') || text.includes('entrance')) roomKey = 'room-1';
+              else if (text.includes('room-2') || text.includes('digital'))  roomKey = 'room-2';
+              else if (text.includes('room-3') || text.includes('central'))  roomKey = 'room-3';
+              else if (text.includes('room-4') || text.includes('sculpt'))   roomKey = 'room-4';
+              else if (text.includes('room-5') || text.includes('lab'))      roomKey = 'room-5';
+            } else if (record.recordType === 'url') {
+              const decoder = new TextDecoder();
+              const url = decoder.decode(record.data);
+              // Support URL params: map.html?room=room-1
+              const match = url.match(/[?&]room=(room-\d)/);
+              if (match) roomKey = match[1];
+            }
+          }
+
+          if (roomKey && rooms[roomKey]) {
+            highlightRoom(roomKey);
+          } else {
+            setNFCStatus('active', '❓', 'Unknown tag', 'This NFC tag is not linked to a museum room. Try another one.');
+          }
+
+          document.getElementById('btn-scan').disabled = false;
+        });
+
+        nfcReader.addEventListener('readingerror', () => {
+          setNFCStatus('', '⚠️', 'Read error', 'Could not read the NFC tag. Please try again.');
+          document.getElementById('btn-scan').disabled = false;
+        });
+
+      } catch (err) {
+        console.error(err);
+        setNFCStatus('', '⚠️', 'Permission denied', 'NFC permission was not granted. Please allow NFC access and try again.');
+        document.getElementById('btn-scan').disabled = false;
+      }
+    }
+
+    // Auto-check NFC on page load & handle URL param (from QR/link fallback)
+    window.addEventListener('load', () => {
+      const params = new URLSearchParams(window.location.search);
+      const roomParam = params.get('room');
+      if (roomParam && rooms[roomParam]) {
+        highlightRoom(roomParam);
+      }
+    });
+  </script>
+</body>
+</html>
