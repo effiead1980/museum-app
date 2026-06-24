@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#ffffff" />
+  <title>Equall Museum · Entry Pass</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #ffffff;
+      --surface: #f2f2f2;
+      --surface2: #e8e8e8;
+      --accent: #990000;
+      --accent-dark: #6b0000;
+      --text: #111111;
+      --text-muted: #666666;
+      --radius: 16px;
+      --safe-top: env(safe-area-inset-top, 0px);
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+    }
+
+    html { height: 100%; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100svh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-top: var(--safe-top);
+      padding-bottom: calc(40px + var(--safe-bottom));
+      -webkit-text-size-adjust: 100%;
+    }
+
+    /* ─── Header ─────────────────────────────────────────── */
+    .header {
+      width: 100%;
+      background: #ffffff;
+      padding: 16px 24px 12px;
+      text-align: center;
+      border-bottom: 1px solid #e0e0e0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    .header img.logo {
+      width: clamp(72px, 20vw, 96px);
+      height: clamp(72px, 20vw, 96px);
+      object-fit: contain;
+    }
+    .header p {
+      font-size: clamp(11px, 3vw, 13px);
+      color: var(--text-muted);
+      letter-spacing: 0.6px;
+    }
+
+    .accent-line {
+      width: 100%;
+      height: 2px;
+      background: var(--accent);
+      flex-shrink: 0;
+    }
+
+    /* ─── Step dots ───────────────────────────────────────── */
+    .steps {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      justify-content: center;
+      padding: 14px 0 0;
+      width: 100%;
+    }
+    .step-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: #cccccc;
+      transition: background 0.3s, width 0.3s;
+    }
+    .step-dot.active { background: var(--accent); width: 24px; border-radius: 4px; }
+    .step-dot.done   { background: #aaaaaa; }
+
+    /* ─── Screens ─────────────────────────────────────────── */
+    .screen {
+      display: none;
+      width: 100%;
+      max-width: min(480px, 100%);
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+      animation: fadeIn 0.3s ease;
+    }
+    .screen.active { display: flex; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ─── Welcome hero ────────────────────────────────────── */
+    .hero {
+      width: 100%;
+      position: relative;
+      height: clamp(200px, 40svh, 300px);
+      overflow: hidden;
+    }
+    .hero img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center 30%;
+      filter: brightness(0.45) grayscale(20%);
+    }
+    .hero::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(to bottom, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 25%, rgba(255,255,255,0) 55%, rgba(255,255,255,1) 100%),
+        linear-gradient(to right,  rgba(255,255,255,0.45) 0%, rgba(255,255,255,0) 18%, rgba(255,255,255,0) 82%, rgba(255,255,255,0.45) 100%);
+      pointer-events: none;
+    }
+    .hero-text {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 0 24px 28px;
+      z-index: 1;
+    }
+    .hero-text h2 {
+      font-size: clamp(22px, 6vw, 28px);
+      font-weight: 800;
+      text-align: center;
+      line-height: 1.2;
+      color: #fff;
+      text-shadow: 0 2px 12px rgba(0,0,0,0.65);
+    }
+    .hero-text span {
+      font-size: clamp(10px, 2.5vw, 12px);
+      color: #ff6060;
+      font-weight: 700;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      text-shadow: 0 1px 6px rgba(0,0,0,0.85);
+    }
+
+    .welcome-body {
+      width: 100%;
+      padding: 0 clamp(16px, 5vw, 24px);
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      align-items: center;
+    }
+    .welcome-sub {
+      font-size: clamp(14px, 4vw, 16px);
+      color: var(--text-muted);
+      text-align: center;
+      line-height: 1.65;
+    }
+
+    /* ─── Form ────────────────────────────────────────────── */
+    .form-wrap {
+      width: 100%;
+      padding: 0 clamp(16px, 5vw, 24px);
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      align-items: center;
+    }
+    .form-group {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+    .form-group label {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .form-group input {
+      width: 100%;
+      padding: 14px 16px;
+      background: var(--surface);
+      border: 1px solid #cccccc;
+      border-radius: var(--radius);
+      color: var(--text);
+      font-size: 16px;
+      outline: none;
+      transition: border-color 0.2s;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+    .form-group input:focus { border-color: var(--accent); }
+    .form-group input.input-error { border-color: #cc0000; }
+
+    .field-error {
+      font-size: 11px;
+      color: #cc0000;
+      display: none;
+      padding-left: 2px;
+    }
+    .field-error.visible { display: block; }
+
+    /* ─── Stepper ─────────────────────────────────────────── */
+    .stepper {
+      display: flex;
+      align-items: center;
+      background: var(--surface);
+      border: 1px solid #cccccc;
+      border-radius: var(--radius);
+      overflow: hidden;
+      height: 52px;
+      width: 100%;
+    }
+    .stepper-btn {
+      width: 56px;
+      height: 52px;
+      background: transparent;
+      border: none;
+      font-size: 24px;
+      color: var(--accent);
+      cursor: pointer;
+      font-weight: 700;
+      transition: background 0.15s;
+      flex-shrink: 0;
+      -webkit-tap-highlight-color: transparent;
+      line-height: 1;
+    }
+    .stepper-btn:active { background: var(--surface2); }
+    .stepper-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+    .stepper-count {
+      flex: 1;
+      text-align: center;
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text);
+      user-select: none;
+    }
+
+    /* ─── Choice cards ────────────────────────────────────── */
+    .choice-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      align-self: flex-start;
+    }
+    .choices {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .choice-card {
+      width: 100%;
+      background: var(--surface);
+      border: 1.5px solid #dddddd;
+      border-radius: var(--radius);
+      padding: 16px 18px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s, transform 0.15s;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      min-height: 64px;
+    }
+    .choice-card:active { transform: scale(0.985); }
+    .choice-card.selected { background: var(--surface2); }
+
+    .choice-dot {
+      width: 26px; height: 26px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .choice-dot.red   { background: #990000; box-shadow: 0 0 10px #99000070; }
+    .choice-dot.green { background: #00aa33; box-shadow: 0 0 10px #00aa3370; }
+    .choice-dot.blue  { background: #0066dd; box-shadow: 0 0 10px #0066dd70; }
+    .choice-dot.red-green {
+      background: linear-gradient(to right, #990000 50%, #00aa33 50%);
+      box-shadow: 0 0 10px #66666670;
+    }
+    .choice-dot.blue-green {
+      background: linear-gradient(to right, #0066dd 50%, #00aa33 50%);
+      box-shadow: 0 0 10px #66666670;
+    }
+
+    .card-red   { border-color: #99000030; }
+    .card-green { border-color: #00aa3330; }
+    .card-blue  { border-color: #0066dd30; }
+    .card-red-green { border-color: #66666630; }
+    .card-blue-green { border-color: #66666630; }
+    .card-red.selected        { border-color: #990000; }
+    .card-blue.selected       { border-color: #0066dd; }
+    .card-red-green.selected  { border-color: #666666; }
+    .card-blue-green.selected { border-color: #666666; }
+
+    .choice-text h3 { font-size: 15px; font-weight: 600; margin-bottom: 2px; color: var(--text); }
+    .choice-text p  { font-size: 12px; color: var(--text-muted); line-height: 1.4; }
+
+    /* ─── Buttons ─────────────────────────────────────────── */
+    .btn {
+      width: 100%;
+      padding: 16px;
+      border: none;
+      border-radius: var(--radius);
+      font-size: clamp(15px, 4vw, 17px);
+      font-weight: 700;
+      cursor: pointer;
+      letter-spacing: 0.4px;
+      transition: background 0.2s, transform 0.15s;
+      -webkit-tap-highlight-color: transparent;
+      min-height: 52px;
+    }
+    .btn:active { transform: scale(0.98); }
+    .btn:disabled { opacity: 0.3; cursor: not-allowed; }
+    .btn-primary { background: var(--accent); color: #fff; }
+    .btn-primary:not(:disabled):active { background: var(--accent-dark); }
+    .btn-ghost {
+      background: transparent;
+      border: 1px solid #cccccc;
+      color: var(--text-muted);
+    }
+    .btn-save {
+      background: transparent;
+      border: 1.5px solid var(--accent);
+      color: var(--accent);
+      font-size: 15px;
+    }
+
+    /* ─── Ticket screen ──────────────────────────────────────── */
+    .ticket-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0;
+      width: 100%;
+    }
+
+    /* ── Big scannable color panel ── */
+    .scan-panel {
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      display: block;
+    }
+
+    /* Color states — pure vivid for camera recognition */
+    .scan-red   { background: #dd0000; }
+    .scan-green { background: #00aa33; }
+    .scan-blue  { background: #0066dd; }
+    /* Dual-color panels split horizontally (top/bottom) */
+    .scan-red-green { background: linear-gradient(to bottom, #dd0000 50%, #00aa33 50%); }
+    .scan-blue-green { background: linear-gradient(to bottom, #0066dd 50%, #00aa33 50%); }
+
+    /* ── Ticket detail strip below the panel ── */
+    .ticket-strip {
+      width: 100%;
+      background: #ffffff;
+      border-top: 3px solid #eeeeee;
+      padding: 16px 20px 12px;
+    }
+    .ticket-strip-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+    .ticket-strip-top img {
+      width: 44px;
+      height: 44px;
+      object-fit: contain;
+    }
+    .ticket-type-badge {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      padding: 4px 12px;
+      border-radius: 20px;
+      color: #fff;
+    }
+    .badge-red   { background: #dd0000; }
+    .badge-green { background: #00aa33; }
+    .badge-blue  { background: #0066dd; }
+    .badge-red-green { background: linear-gradient(to right, #dd0000 50%, #00aa33 50%); }
+    .badge-blue-green { background: linear-gradient(to right, #0066dd 50%, #00aa33 50%); }
+
+    .ticket-fields {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .ticket-field label {
+      display: block;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: #aaaaaa;
+      margin-bottom: 2px;
+    }
+    .ticket-field span {
+      font-size: 13px;
+      font-weight: 600;
+      color: #111111;
+    }
+
+    .ticket-actions {
+      width: 100%;
+      padding: 14px 20px 0;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    /* ─── Instructions ────────────────────────────────────── */
+    .instructions {
+      background: var(--surface);
+      border-radius: var(--radius);
+      border: 1px solid #dddddd;
+      padding: 16px 18px;
+      width: 100%;
+      max-width: 360px;
+    }
+    .instructions h4 {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--accent);
+      margin-bottom: 10px;
+    }
+    .instructions ol {
+      padding-left: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+    .instructions li {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <div class="header">
+    <img class="logo" src="equall-museum-high-resolution-logo.png" alt="Equall Museum" />
+    <p>Powered by Husky AI &middot; Scan &amp; Enter</p>
+  </div>
+  <div class="accent-line"></div>
+
+  <!-- Step dots -->
+  <div class="steps" id="steps">
+    <div class="step-dot active" id="dot-0"></div>
+    <div class="step-dot" id="dot-1"></div>
+    <div class="step-dot" id="dot-2"></div>
+  </div>
+
+  <!-- Screen 1: Welcome -->
+  <div class="screen active" id="screen-welcome">
+    <div class="hero">
+      <img src="AdobeStock_582767215.jpeg" alt="Equall Museum interior" />
+      <div class="hero-text">
+        <span>The Nexus of Innovation and Art</span>
+        <h2>Welcome to<br>Equall Museum</h2>
+      </div>
+    </div>
+    <div class="welcome-body">
+      <p class="welcome-sub">
+        Get your digital entry pass in seconds.<br>
+        Choose your group type and we'll generate a color-coded ticket scannable at the entrance.
+      </p>
+      <button class="btn btn-primary" onclick="goTo('screen-info')">Get My Ticket &rarr;</button>
+      <a href="map.html" style="width:100%; text-decoration:none;">
+        <button class="btn btn-ghost" style="width:100%;">🗺️ Museum Map</button>
+      </a>
+    </div>
+  </div>
+
+  <!-- Screen 2: Visit info -->
+  <div class="screen" id="screen-info">
+    <div class="form-wrap">
+      <div class="form-group">
+        <label for="name">Visitor Name</label>
+        <input type="text" id="name" placeholder="e.g. Maria Papadopoulou"
+               autocomplete="name" oninput="checkForm()" />
+        <span class="field-error" id="name-error">Please enter your name to continue</span>
+      </div>
+      <div class="form-group">
+        <label for="visit-date">Date of Visit</label>
+        <input type="date" id="visit-date" />
+      </div>
+      <div class="form-group">
+        <label>Number of People</label>
+        <div class="stepper">
+          <button class="stepper-btn" id="count-minus" onclick="changeCount(-1)" disabled>&#8722;</button>
+          <span class="stepper-count" id="count-display">1</span>
+          <button class="stepper-btn" id="count-plus" onclick="changeCount(1)">&#43;</button>
+        </div>
+      </div>
+
+      <div class="choice-label">Select your group type</div>
+
+      <div class="choices">
+        <div class="choice-card card-red" data-type="adults" onclick="selectType(this)">
+          <div class="choice-dot red"></div>
+          <div class="choice-text">
+            <h3>Adults Only</h3>
+            <p>Group consisting entirely of adults (18+)</p>
+          </div>
+        </div>
+        <div class="choice-card card-blue" data-type="children" onclick="selectType(this)">
+          <div class="choice-dot blue"></div>
+          <div class="choice-text">
+            <h3>Adults &amp; Children</h3>
+            <p>Mixed group of adults and minors</p>
+          </div>
+        </div>
+        <div class="choice-card card-red-green" data-type="adults-disabilities" onclick="selectType(this)">
+          <div class="choice-dot red-green"></div>
+          <div class="choice-text">
+            <h3>Adults &amp; Disabilities</h3>
+            <p>Adults including visitors with disabilities</p>
+          </div>
+        </div>
+        <div class="choice-card card-blue-green" data-type="children-disabilities" onclick="selectType(this)">
+          <div class="choice-dot blue-green"></div>
+          <div class="choice-text">
+            <h3>Children &amp; Disabilities</h3>
+            <p>Children including visitors with disabilities</p>
+          </div>
+        </div>
+      </div>
+
+      <button class="btn btn-primary" id="btn-generate" onclick="generateTicket()" disabled>Generate My Pass</button>
+      <button class="btn btn-ghost" onclick="goTo('screen-welcome')">&larr; Back</button>
+    </div>
+  </div>
+
+  <!-- Screen 3: Ticket -->
+  <div class="screen" id="screen-ticket">
+    <div class="ticket-wrapper">
+
+      <!-- Full-width color panel for Husky AI lens -->
+      <div class="scan-panel" id="scan-panel"></div>
+
+      <!-- Ticket detail strip -->
+      <div class="ticket-strip">
+        <div class="ticket-strip-top">
+          <img src="equall-museum-high-resolution-logo.png" alt="Equall Museum" />
+          <span class="ticket-type-badge" id="ticket-badge">&mdash;</span>
+        </div>
+        <div class="ticket-fields">
+          <div class="ticket-field">
+            <label>Visitor</label>
+            <span id="t-name">&mdash;</span>
+          </div>
+          <div class="ticket-field">
+            <label>Date</label>
+            <span id="t-date">&mdash;</span>
+          </div>
+          <div class="ticket-field">
+            <label>Group Size</label>
+            <span id="t-count">&mdash;</span>
+          </div>
+          <div class="ticket-field">
+            <label>Pass ID</label>
+            <span id="t-id">&mdash;</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="ticket-actions">
+        <button class="btn btn-ghost" onclick="resetApp()">&larr; New Ticket</button>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    let selectedType = null;
+    let personCount = 1;
+
+    const dateInput = document.getElementById('visit-date');
+    const today = new Date().toISOString().split('T')[0];
+    dateInput.value = today;
+
+    function goTo(id) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+      const idx = ['screen-welcome', 'screen-info', 'screen-ticket'].indexOf(id);
+      ['dot-0', 'dot-1', 'dot-2'].forEach((d, i) => {
+        const el = document.getElementById(d);
+        el.className = 'step-dot' + (i === idx ? ' active' : i < idx ? ' done' : '');
+      });
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function changeCount(delta) {
+      personCount = Math.max(1, Math.min(99, personCount + delta));
+      document.getElementById('count-display').textContent = personCount;
+      document.getElementById('count-minus').disabled = personCount <= 1;
+      document.getElementById('count-plus').disabled  = personCount >= 99;
+    }
+
+    function selectType(card) {
+      document.querySelectorAll('.choice-card').forEach(c => c.classList.remove('selected'));
+      card.classList.add('selected');
+      selectedType = card.dataset.type;
+      checkForm();
+    }
+
+    function checkForm() {
+      const nameVal = document.getElementById('name').value.trim();
+      const nameInput = document.getElementById('name');
+      const nameError = document.getElementById('name-error');
+      if (nameVal) {
+        nameInput.classList.remove('input-error');
+        nameError.classList.remove('visible');
+      }
+      document.getElementById('btn-generate').disabled = !(nameVal && selectedType);
+    }
+
+    function generateTicket() {
+      const nameVal = document.getElementById('name').value.trim();
+      if (!nameVal) {
+        document.getElementById('name').classList.add('input-error');
+        document.getElementById('name-error').classList.add('visible');
+        document.getElementById('name').focus();
+        return;
+      }
+
+      const date = document.getElementById('visit-date').value;
+      const config = {
+        'adults':               { label: 'Adults Only',             panelClass: 'scan-red',        badgeClass: 'badge-red'        },
+        'children':             { label: 'Adults & Children',      panelClass: 'scan-blue',       badgeClass: 'badge-blue'       },
+        'adults-disabilities':  { label: 'Adults & Disabilities',  panelClass: 'scan-red-green',  badgeClass: 'badge-red-green'  },
+        'children-disabilities':{ label: 'Children & Disabilities',panelClass: 'scan-blue-green', badgeClass: 'badge-blue-green' },
+      };
+
+      const c = config[selectedType];
+      const passId = 'EQ-' + Math.random().toString(36).substring(2, 7).toUpperCase();
+      const [y, m, d] = date.split('-');
+      const fmt = d && m ? `${d}/${m}/${y}` : '—';
+
+      document.getElementById('t-name').textContent      = nameVal;
+      document.getElementById('t-date').textContent      = fmt;
+      document.getElementById('t-count').textContent     = personCount + (personCount === 1 ? ' person' : ' people');
+      document.getElementById('t-id').textContent        = passId;
+      document.getElementById('ticket-badge').textContent = c.label;
+
+      document.getElementById('scan-panel').className   = 'scan-panel ' + c.panelClass;
+      document.getElementById('ticket-badge').className = 'ticket-type-badge ' + c.badgeClass;
+
+      goTo('screen-ticket');
+
+      if ('wakeLock' in navigator) {
+        navigator.wakeLock.request('screen').catch(() => {});
+      }
+    }
+
+    function resetApp() {
+      selectedType = null;
+      personCount = 1;
+      document.querySelectorAll('.choice-card').forEach(c => c.classList.remove('selected'));
+      document.getElementById('btn-generate').disabled = true;
+      document.getElementById('name').value = '';
+      document.getElementById('name').classList.remove('input-error');
+      document.getElementById('name-error').classList.remove('visible');
+      document.getElementById('count-display').textContent = '1';
+      document.getElementById('count-minus').disabled = true;
+      document.getElementById('count-plus').disabled  = false;
+      document.getElementById('visit-date').value = today;
+      goTo('screen-welcome');
+    }
+  </script>
+</body>
+</html>
