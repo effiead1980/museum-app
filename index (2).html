@@ -1,0 +1,1355 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#ffffff" />
+  <title>Equall Museum · Entry Pass</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #ffffff;
+      --surface: #f2f2f2;
+      --surface2: #e8e8e8;
+      --accent: #990000;
+      --accent-dark: #6b0000;
+      --text: #111111;
+      --text-muted: #666666;
+      --radius: 16px;
+      --safe-top: env(safe-area-inset-top, 0px);
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+    }
+
+    html { height: 100%; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100svh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-top: var(--safe-top);
+      padding-bottom: calc(40px + var(--safe-bottom));
+      -webkit-text-size-adjust: 100%;
+    }
+
+    /* ─── Header ─────────────────────────────────────────── */
+    .header {
+      width: 100%;
+      background: #ffffff;
+      padding: 16px 24px 12px;
+      text-align: center;
+      border-bottom: 1px solid #e0e0e0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    .header img.logo {
+      width: clamp(72px, 20vw, 96px);
+      height: clamp(72px, 20vw, 96px);
+      object-fit: contain;
+    }
+    .header p {
+      font-size: clamp(11px, 3vw, 13px);
+      color: var(--text-muted);
+      letter-spacing: 0.6px;
+    }
+    .accent-line {
+      width: 100%;
+      height: 2px;
+      background: var(--accent);
+      flex-shrink: 0;
+    }
+
+    /* ─── Step dots ───────────────────────────────────────── */
+    .steps {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      justify-content: center;
+      padding: 14px 0 0;
+      width: 100%;
+    }
+    .step-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: #cccccc;
+      transition: background 0.3s, width 0.3s;
+    }
+    .step-dot.active { background: var(--accent); width: 24px; border-radius: 4px; }
+    .step-dot.done   { background: #aaaaaa; }
+
+    /* ─── Screens ─────────────────────────────────────────── */
+    .screen {
+      display: none;
+      width: 100%;
+      max-width: min(480px, 100%);
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+      animation: fadeIn 0.3s ease;
+    }
+    .screen.active { display: flex; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ─── Welcome hero ────────────────────────────────────── */
+    .hero {
+      width: 100%;
+      position: relative;
+      height: clamp(200px, 40svh, 300px);
+      overflow: hidden;
+    }
+    .hero img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center 30%;
+      filter: brightness(0.45) grayscale(20%);
+    }
+    .hero::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(to bottom, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 25%, rgba(255,255,255,0) 55%, rgba(255,255,255,1) 100%),
+        linear-gradient(to right,  rgba(255,255,255,0.45) 0%, rgba(255,255,255,0) 18%, rgba(255,255,255,0) 82%, rgba(255,255,255,0.45) 100%);
+      pointer-events: none;
+    }
+    .hero-text {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 0 24px 28px;
+      z-index: 1;
+    }
+    .hero-text h2 {
+      font-size: clamp(22px, 6vw, 28px);
+      font-weight: 800;
+      text-align: center;
+      line-height: 1.2;
+      color: #fff;
+      text-shadow: 0 2px 12px rgba(0,0,0,0.65);
+    }
+    .hero-text span {
+      font-size: clamp(10px, 2.5vw, 12px);
+      color: #ff6060;
+      font-weight: 700;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      text-shadow: 0 1px 6px rgba(0,0,0,0.85);
+    }
+
+    .welcome-body {
+      width: 100%;
+      padding: 0 clamp(16px, 5vw, 24px);
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      align-items: center;
+    }
+    .welcome-sub {
+      font-size: clamp(14px, 4vw, 16px);
+      color: var(--text-muted);
+      text-align: center;
+      line-height: 1.65;
+    }
+
+    /* ─── Form ────────────────────────────────────────────── */
+    .form-wrap {
+      width: 100%;
+      padding: 0 clamp(16px, 5vw, 24px);
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      align-items: center;
+    }
+    .form-group {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+    .form-group label {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .form-group input {
+      width: 100%;
+      padding: 14px 16px;
+      background: var(--surface);
+      border: 1px solid #cccccc;
+      border-radius: var(--radius);
+      color: var(--text);
+      font-size: 16px;
+      outline: none;
+      transition: border-color 0.2s;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+    .form-group input:focus { border-color: var(--accent); }
+    .form-group input.input-error { border-color: #cc0000; }
+
+    .field-error {
+      font-size: 11px;
+      color: #cc0000;
+      display: none;
+      padding-left: 2px;
+    }
+    .field-error.visible { display: block; }
+
+    /* ─── Stepper ─────────────────────────────────────────── */
+    .stepper {
+      display: flex;
+      align-items: center;
+      background: var(--surface);
+      border: 1px solid #cccccc;
+      border-radius: var(--radius);
+      overflow: hidden;
+      height: 52px;
+      width: 100%;
+    }
+    .stepper-btn {
+      width: 56px; height: 52px;
+      background: transparent;
+      border: none;
+      font-size: 24px;
+      color: var(--accent);
+      cursor: pointer;
+      font-weight: 700;
+      transition: background 0.15s;
+      flex-shrink: 0;
+      -webkit-tap-highlight-color: transparent;
+      line-height: 1;
+    }
+    .stepper-btn:active { background: var(--surface2); }
+    .stepper-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+    .stepper-count {
+      flex: 1;
+      text-align: center;
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text);
+      user-select: none;
+    }
+
+    /* ─── Choice cards ────────────────────────────────────── */
+    .choice-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      align-self: flex-start;
+    }
+    .choices {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .choice-card {
+      width: 100%;
+      background: var(--surface);
+      border: 1.5px solid #dddddd;
+      border-radius: var(--radius);
+      padding: 16px 18px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s, transform 0.15s;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      min-height: 64px;
+    }
+    .choice-card:active { transform: scale(0.985); }
+    .choice-card.selected { background: var(--surface2); }
+
+    .choice-dot {
+      width: 26px; height: 26px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .choice-dot.red   { background: #990000; box-shadow: 0 0 10px #99000070; }
+    .choice-dot.green { background: #00aa33; box-shadow: 0 0 10px #00aa3370; }
+    .choice-dot.blue  { background: #0066dd; box-shadow: 0 0 10px #0066dd70; }
+    .choice-dot.red-green {
+      background: linear-gradient(to right, #990000 50%, #00aa33 50%);
+      box-shadow: 0 0 10px #66666670;
+    }
+    .choice-dot.blue-green {
+      background: linear-gradient(to right, #0066dd 50%, #00aa33 50%);
+      box-shadow: 0 0 10px #66666670;
+    }
+
+    .card-red        { border-color: #99000030; }
+    .card-blue       { border-color: #0066dd30; }
+    .card-red-green  { border-color: #66666630; }
+    .card-blue-green { border-color: #66666630; }
+    .card-red.selected        { border-color: #990000; }
+    .card-blue.selected       { border-color: #0066dd; }
+    .card-red-green.selected  { border-color: #666666; }
+    .card-blue-green.selected { border-color: #666666; }
+
+    .choice-text h3 { font-size: 15px; font-weight: 600; margin-bottom: 2px; color: var(--text); }
+    .choice-text p  { font-size: 12px; color: var(--text-muted); line-height: 1.4; }
+
+    /* ─── Buttons ─────────────────────────────────────────── */
+    .btn {
+      width: 100%;
+      padding: 16px;
+      border: none;
+      border-radius: var(--radius);
+      font-size: clamp(15px, 4vw, 17px);
+      font-weight: 700;
+      cursor: pointer;
+      letter-spacing: 0.4px;
+      transition: background 0.2s, transform 0.15s;
+      -webkit-tap-highlight-color: transparent;
+      min-height: 52px;
+    }
+    .btn:active { transform: scale(0.98); }
+    .btn:disabled { opacity: 0.3; cursor: not-allowed; }
+    .btn-primary { background: var(--accent); color: #fff; }
+    .btn-primary:not(:disabled):active { background: var(--accent-dark); }
+    .btn-ghost {
+      background: transparent;
+      border: 1px solid #cccccc;
+      color: var(--text-muted);
+    }
+
+    /* ─── Ticket screen ──────────────────────────────────── */
+    .ticket-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0;
+      width: 100%;
+    }
+    .scan-panel {
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      display: block;
+    }
+    .scan-red        { background: #dd0000; }
+    .scan-blue       { background: #0066dd; }
+    .scan-red-green  { background: linear-gradient(to bottom, #dd0000 50%, #00aa33 50%); }
+    .scan-blue-green { background: linear-gradient(to bottom, #0066dd 50%, #00aa33 50%); }
+
+    .ticket-strip {
+      width: 100%;
+      background: #ffffff;
+      border-top: 3px solid #eeeeee;
+      padding: 16px 20px 12px;
+    }
+    .ticket-strip-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+    .ticket-strip-top img { width: 44px; height: 44px; object-fit: contain; }
+    .ticket-type-badge {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      padding: 4px 12px;
+      border-radius: 20px;
+      color: #fff;
+    }
+    .badge-red        { background: #dd0000; }
+    .badge-blue       { background: #0066dd; }
+    .badge-red-green  { background: linear-gradient(to right, #dd0000 50%, #00aa33 50%); }
+    .badge-blue-green { background: linear-gradient(to right, #0066dd 50%, #00aa33 50%); }
+
+    .ticket-fields {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .ticket-field label {
+      display: block;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: #aaaaaa;
+      margin-bottom: 2px;
+    }
+    .ticket-field span { font-size: 13px; font-weight: 600; color: #111111; }
+    .ticket-actions {
+      width: 100%;
+      padding: 14px 20px 0;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    /* ─── MAP SCREEN ─────────────────────────────────────── */
+    .map-header {
+      width: 100%;
+      padding: 0 clamp(16px,5vw,24px);
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .map-header h2 { font-size: 26px; font-weight: 800; }
+    .map-header p  { font-size: 14px; color: var(--text-muted); }
+
+    .map-img-wrap {
+      width: 100%;
+      padding: 0 clamp(16px,5vw,24px);
+    }
+    .map-img-wrap img {
+      width: 100%;
+      border-radius: 12px;
+      border: 1px solid #e0e0e0;
+      display: block;
+    }
+
+    /* NFC status card */
+    .nfc-card {
+      width: 100%;
+      padding: 0 clamp(16px,5vw,24px);
+    }
+    .nfc-inner {
+      background: var(--surface);
+      border-radius: var(--radius);
+      border: 1px solid #e0e0e0;
+      padding: 16px 18px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .nfc-icon {
+      font-size: 32px;
+      flex-shrink: 0;
+    }
+    .nfc-inner h3 { font-size: 15px; font-weight: 700; margin-bottom: 2px; }
+    .nfc-inner p  { font-size: 12px; color: var(--text-muted); line-height: 1.4; }
+
+    .nfc-inner.scanning {
+      background: #fff8e1;
+      border-color: #ffcc00;
+    }
+    .nfc-inner.found {
+      background: #e8f5e9;
+      border-color: #4caf50;
+    }
+
+    /* Scan button */
+    .map-btn-wrap {
+      width: 100%;
+      padding: 0 clamp(16px,5vw,24px);
+    }
+    .btn-scan {
+      width: 100%;
+      padding: 18px;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius);
+      font-size: 17px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      transition: background 0.2s, transform 0.15s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .btn-scan:active { transform: scale(0.98); background: var(--accent-dark); }
+
+    /* Rooms list */
+    .rooms-section {
+      width: 100%;
+      padding: 0 clamp(16px,5vw,24px);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .rooms-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    .room-card {
+      width: 100%;
+      background: var(--surface);
+      border: 1.5px solid #e0e0e0;
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s, transform 0.15s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .room-card:active { transform: scale(0.985); }
+    .room-card.active-room {
+      background: #f0fff0;
+      border-color: #4caf50;
+    }
+
+    .room-dot {
+      width: 14px; height: 14px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .room-card-text { flex: 1; }
+    .room-card-text h4 { font-size: 14px; font-weight: 700; margin-bottom: 2px; color: var(--text); }
+    .room-card-text p  { font-size: 11px; color: var(--text-muted); line-height: 1.4; }
+
+    .here-badge {
+      background: #4caf50;
+      color: #fff;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 20px;
+      white-space: nowrap;
+      display: none;
+    }
+    .room-card.active-room .here-badge { display: block; }
+
+    .map-back-btn {
+      width: 100%;
+      padding: 0 clamp(16px,5vw,24px);
+    }
+
+    /* ─── ROOM DETAIL SCREEN ─────────────────────────────── */
+    .room-detail-wrap {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .room-hero {
+      width: 100%;
+      position: relative;
+      height: clamp(180px, 35svh, 260px);
+      overflow: hidden;
+    }
+    .room-hero img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .room-hero-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.65) 0%, rgba(0,0,0,0) 60%);
+    }
+    .room-hero-title {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 16px 20px;
+      color: #fff;
+      font-size: clamp(17px, 5vw, 22px);
+      font-weight: 800;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+    }
+
+    .room-content {
+      padding: 20px clamp(16px,5vw,24px);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    /* Audio player */
+    .audio-player {
+      background: var(--surface);
+      border-radius: var(--radius);
+      border: 1px solid #e0e0e0;
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .audio-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+    .audio-controls {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .play-btn {
+      width: 48px; height: 48px;
+      border-radius: 50%;
+      background: var(--accent);
+      border: none;
+      color: #fff;
+      font-size: 18px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: background 0.2s, transform 0.15s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .play-btn:active { transform: scale(0.95); background: var(--accent-dark); }
+    .audio-progress-wrap { flex: 1; display: flex; flex-direction: column; gap: 6px; }
+    .audio-bar-bg {
+      width: 100%;
+      height: 4px;
+      background: #dddddd;
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    .audio-bar-fill {
+      height: 100%;
+      background: var(--accent);
+      border-radius: 2px;
+      width: 0%;
+      transition: width 0.3s linear;
+    }
+    .audio-time {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    /* Room description */
+    .room-desc {
+      font-size: 15px;
+      color: var(--text);
+      line-height: 1.7;
+    }
+
+    /* Mini map */
+    .mini-map-wrap {
+      position: relative;
+      width: 100%;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid #e0e0e0;
+    }
+    .mini-map-wrap img {
+      width: 100%;
+      display: block;
+      opacity: 0.7;
+    }
+    .mini-dot {
+      position: absolute;
+      width: 22px; height: 22px;
+      background: var(--accent);
+      border: 3px solid #fff;
+      border-radius: 50%;
+      box-shadow: 0 0 12px rgba(153,0,0,0.6);
+      transform: translate(-50%, -50%);
+      animation: pulse-dot 1.5s infinite;
+    }
+    @keyframes pulse-dot {
+      0%   { box-shadow: 0 0 0 0 rgba(153,0,0,0.5); }
+      70%  { box-shadow: 0 0 0 10px rgba(153,0,0,0); }
+      100% { box-shadow: 0 0 0 0 rgba(153,0,0,0); }
+    }
+    .mini-map-label {
+      position: absolute;
+      top: 8px; left: 8px;
+      background: rgba(0,0,0,0.6);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 20px;
+    }
+
+    /* NFC links box */
+    .nfc-links-box {
+      background: #f8f8f8;
+      border: 1px solid #e0e0e0;
+      border-radius: var(--radius);
+      padding: 14px 16px;
+    }
+    .nfc-links-box h4 {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+    }
+    .nfc-link-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px solid #eeeeee;
+    }
+    .nfc-link-item:last-child { border-bottom: none; }
+    .nfc-link-name { font-size: 13px; font-weight: 600; color: var(--text); }
+    .nfc-link-url {
+      font-size: 11px;
+      color: var(--accent);
+      font-family: monospace;
+      word-break: break-all;
+      text-align: right;
+      max-width: 60%;
+    }
+
+    .room-back-btn {
+      padding: 0 clamp(16px,5vw,24px) 10px;
+      width: 100%;
+    }
+
+    /* highlight map room on scan */
+    .map-img-wrap { position: relative; }
+    .room-highlight {
+      position: absolute;
+      border-radius: 50%;
+      border: 3px solid var(--accent);
+      box-shadow: 0 0 16px rgba(153,0,0,0.5);
+      pointer-events: none;
+      animation: pulse-ring 1.5s infinite;
+      display: none;
+    }
+    @keyframes pulse-ring {
+      0%   { box-shadow: 0 0 0 0 rgba(153,0,0,0.4); }
+      70%  { box-shadow: 0 0 0 12px rgba(153,0,0,0); }
+      100% { box-shadow: 0 0 0 0 rgba(153,0,0,0); }
+    }
+
+    /* back link on map */
+    .back-link {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--accent);
+      text-decoration: none;
+      cursor: pointer;
+      display: inline-block;
+      padding: 6px 0;
+    }
+    .back-link:hover { text-decoration: underline; }
+
+    .map-top-row {
+      width: 100%;
+      padding: 8px clamp(16px,5vw,24px) 0;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <div class="header">
+    <img class="logo" src="equall-museum-high-resolution-logo.png" alt="Equall Museum" />
+    <p id="header-sub">Powered by Husky AI · Scan &amp; Enter</p>
+  </div>
+  <div class="accent-line"></div>
+
+  <!-- Step dots (shown only for ticket flow) -->
+  <div class="steps" id="steps">
+    <div class="step-dot active" id="dot-0"></div>
+    <div class="step-dot" id="dot-1"></div>
+    <div class="step-dot" id="dot-2"></div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- SCREEN 1: Welcome                                      -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="screen active" id="screen-welcome">
+    <div class="hero">
+      <img src="AdobeStock_582767215.jpeg" alt="Equall Museum interior" />
+      <div class="hero-text">
+        <span>The Nexus of Innovation and Art</span>
+        <h2>Welcome to<br>Equall Museum</h2>
+      </div>
+    </div>
+    <div class="welcome-body">
+      <p class="welcome-sub">
+        Get your digital entry pass in seconds.<br>
+        Choose your group type and we'll generate a color-coded ticket scannable at the entrance.
+      </p>
+      <button class="btn btn-primary" onclick="goTo('screen-info')">Get My Ticket →</button>
+      <button class="btn btn-ghost" onclick="goToMap()">🗺️ Museum Map</button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- SCREEN 2: Ticket form                                  -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="screen" id="screen-info">
+    <div class="form-wrap">
+      <div class="form-group">
+        <label for="name">Visitor Name</label>
+        <input type="text" id="name" placeholder="e.g. Maria Papadopoulou"
+               autocomplete="name" oninput="checkForm()" />
+        <span class="field-error" id="name-error">Please enter your name to continue</span>
+      </div>
+      <div class="form-group">
+        <label for="visit-date">Date of Visit</label>
+        <input type="date" id="visit-date" />
+      </div>
+      <div class="form-group">
+        <label>Number of People</label>
+        <div class="stepper">
+          <button class="stepper-btn" id="count-minus" onclick="changeCount(-1)" disabled>−</button>
+          <span class="stepper-count" id="count-display">1</span>
+          <button class="stepper-btn" id="count-plus" onclick="changeCount(1)">+</button>
+        </div>
+      </div>
+
+      <div class="choice-label">Select your group type</div>
+      <div class="choices">
+        <div class="choice-card card-red" data-type="adults" onclick="selectType(this)">
+          <div class="choice-dot red"></div>
+          <div class="choice-text">
+            <h3>Adults Only</h3>
+            <p>Group consisting entirely of adults (18+)</p>
+          </div>
+        </div>
+        <div class="choice-card card-blue" data-type="children" onclick="selectType(this)">
+          <div class="choice-dot blue"></div>
+          <div class="choice-text">
+            <h3>Adults &amp; Children</h3>
+            <p>Mixed group of adults and minors</p>
+          </div>
+        </div>
+        <div class="choice-card card-red-green" data-type="adults-disabilities" onclick="selectType(this)">
+          <div class="choice-dot red-green"></div>
+          <div class="choice-text">
+            <h3>Adults &amp; Disabilities</h3>
+            <p>Adults including visitors with disabilities</p>
+          </div>
+        </div>
+        <div class="choice-card card-blue-green" data-type="children-disabilities" onclick="selectType(this)">
+          <div class="choice-dot blue-green"></div>
+          <div class="choice-text">
+            <h3>Children &amp; Disabilities</h3>
+            <p>Children including visitors with disabilities</p>
+          </div>
+        </div>
+      </div>
+
+      <button class="btn btn-primary" id="btn-generate" onclick="generateTicket()" disabled>Generate My Pass</button>
+      <button class="btn btn-ghost" onclick="goTo('screen-welcome')">← Back</button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- SCREEN 3: Ticket                                       -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="screen" id="screen-ticket">
+    <div class="ticket-wrapper">
+      <div class="scan-panel" id="scan-panel"></div>
+      <div class="ticket-strip">
+        <div class="ticket-strip-top">
+          <img src="equall-museum-high-resolution-logo.png" alt="Equall Museum" />
+          <span class="ticket-type-badge" id="ticket-badge">—</span>
+        </div>
+        <div class="ticket-fields">
+          <div class="ticket-field"><label>Visitor</label><span id="t-name">—</span></div>
+          <div class="ticket-field"><label>Date</label><span id="t-date">—</span></div>
+          <div class="ticket-field"><label>Group Size</label><span id="t-count">—</span></div>
+          <div class="ticket-field"><label>Pass ID</label><span id="t-id">—</span></div>
+        </div>
+      </div>
+      <div class="ticket-actions">
+        <button class="btn btn-ghost" onclick="resetApp()">← New Ticket</button>
+        <button class="btn btn-ghost" onclick="goToMap()">🗺️ Go to Museum Map</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- SCREEN 4: Museum Map                                   -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="screen" id="screen-map">
+
+    <div class="map-top-row">
+      <a class="back-link" onclick="goTo('screen-welcome')">← Back to Entry Pass</a>
+    </div>
+
+    <div class="map-header">
+      <h2>Museum Map</h2>
+      <p>Scan an NFC tag to see your location</p>
+    </div>
+
+    <!-- Map image with highlight ring -->
+    <div class="map-img-wrap" id="map-img-wrap">
+      <img src="museum-map.jpg" alt="Museum Map" id="map-main-img" />
+      <div class="room-highlight" id="map-highlight"></div>
+    </div>
+
+    <!-- NFC status card -->
+    <div class="nfc-card">
+      <div class="nfc-inner" id="nfc-status-card">
+        <div class="nfc-icon">📡</div>
+        <div>
+          <h3 id="nfc-status-title">Ready to Scan</h3>
+          <p id="nfc-status-desc">Tap the button below to activate NFC scanning, then hold your phone near an NFC tag.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scan button -->
+    <div class="map-btn-wrap">
+      <button class="btn-scan" id="btn-nfc" onclick="startNFC()">
+        <span>📲</span> <span id="btn-nfc-label">Scan NFC Tag</span>
+      </button>
+    </div>
+
+    <!-- Rooms list -->
+    <div class="rooms-section">
+      <div class="rooms-label">Museum Rooms</div>
+
+      <div class="room-card" id="rc-1" onclick="openRoom(1)">
+        <div class="room-dot" style="background:#dd0000;box-shadow:0 0 8px #dd000066;"></div>
+        <div class="room-card-text">
+          <h4>Room 1 – Entrance Hall</h4>
+          <p>Welcome desk · Information · Accessibility</p>
+        </div>
+        <span class="here-badge">You are here</span>
+      </div>
+
+      <div class="room-card" id="rc-2" onclick="openRoom(2)">
+        <div class="room-dot" style="background:#0066dd;box-shadow:0 0 8px #0066dd66;"></div>
+        <div class="room-card-text">
+          <h4>Room 2 – Digital Hall</h4>
+          <p>Screens · Escalator · Tech installations</p>
+        </div>
+        <span class="here-badge">You are here</span>
+      </div>
+
+      <div class="room-card" id="rc-3" onclick="openRoom(3)">
+        <div class="room-dot" style="background:#7b1fa2;box-shadow:0 0 8px #7b1fa266;"></div>
+        <div class="room-card-text">
+          <h4>Room 3 – Central Hall</h4>
+          <p>Main statue · Winged Victory · AI displays</p>
+        </div>
+        <span class="here-badge">You are here</span>
+      </div>
+
+      <div class="room-card" id="rc-4" onclick="openRoom(4)">
+        <div class="room-dot" style="background:#e65100;box-shadow:0 0 8px #e6510066;"></div>
+        <div class="room-card-text">
+          <h4>Room 4 – Sculpture Gallery</h4>
+          <p>Classical statues · Mixed-ability access</p>
+        </div>
+        <span class="here-badge">You are here</span>
+      </div>
+
+      <div class="room-card" id="rc-5" onclick="openRoom(5)">
+        <div class="room-dot" style="background:#2e7d32;box-shadow:0 0 8px #2e7d3266;"></div>
+        <div class="room-card-text">
+          <h4>Room 5 – Interactive Lab</h4>
+          <p>Hands-on activities · Rooftop terrace</p>
+        </div>
+        <span class="here-badge">You are here</span>
+      </div>
+
+      <!-- NFC URLs hidden - for admin use only -->
+      <span id="nfc-url-1" style="display:none"></span>
+      <span id="nfc-url-2" style="display:none"></span>
+      <span id="nfc-url-3" style="display:none"></span>
+      <span id="nfc-url-4" style="display:none"></span>
+      <span id="nfc-url-5" style="display:none"></span>
+
+    </div>
+
+    <div class="map-back-btn">
+      <button class="btn btn-ghost" onclick="goTo('screen-welcome')">← Back to Entry Pass</button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- SCREEN 5: Room Detail                                  -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="screen" id="screen-room">
+    <div class="room-detail-wrap">
+
+      <!-- Hero image -->
+      <div class="room-hero">
+        <img id="rd-img" src="" alt="Room" />
+        <div class="room-hero-overlay"></div>
+        <div class="room-hero-title" id="rd-title"></div>
+      </div>
+
+      <div class="room-content">
+
+        <!-- Audio player -->
+        <div class="audio-player">
+          <div class="audio-label">🔊 Audio Guide</div>
+          <div class="audio-controls">
+            <button class="play-btn" id="play-btn" onclick="toggleAudio()">▶</button>
+            <div class="audio-progress-wrap">
+              <div class="audio-bar-bg">
+                <div class="audio-bar-fill" id="audio-fill"></div>
+              </div>
+              <div class="audio-time" id="audio-time">0:00 / 0:00</div>
+            </div>
+          </div>
+        </div>
+        <audio id="room-audio" preload="auto"></audio>
+
+        <!-- Description -->
+        <p class="room-desc" id="rd-desc"></p>
+
+        <!-- Mini map -->
+        <div class="mini-map-wrap">
+          <img src="museum-map.jpg" alt="Map" />
+          <div class="mini-map-label">📍 You are here</div>
+          <div class="mini-dot" id="mini-dot"></div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="room-back-btn">
+      <button class="btn btn-ghost" onclick="goToMap()">← Back to Map</button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <script>
+    /* ── Room data ───────────────────────────────────────── */
+    const ROOMS = {
+      1: {
+        title: "1. Υποδοχή & Καλωσόρισμα (Είσοδος)",
+        img: "museum-map.jpg",   // swap με room1-cut.jpg αν υπάρχει
+        audio: "room1.mp3",
+        desc: "Καλώς ορίσατε στο μουσείο μας! Ο χώρος αυτός δημιουργήθηκε με ένα βαθύ όραμα: να αποδείξουμε ότι η πολιτιστική κληρονομιά ανήκει σε όλους, χωρίς αποκλεισμούς. Στόχος μας είναι να προσφέρουμε μια μοναδική, βιωματική εμπειρία όπου η ιστορία, η τέχνη και η τεχνολογία συναντιούνται.",
+        dot: { left: "11%", top: "50%" },
+        mapHighlight: { left: "8%", top: "15%", w: "18%", h: "70%" }
+      },
+      2: {
+        title: "2. Προσβασιμότητα & Συμπερίληψη στην Πράξη",
+        img: "museum-map.jpg",
+        audio: "room2.mp3",
+        desc: "Διαθέτει μια καινοτόμο, πτυσσόμενη σκάλα που μετατρέπεται αυτόματα σε ασφαλή ράμπα για άτομα με κινητική αναπηρία. Παράλληλα, λειτουργεί μια έξυπνη οθόνη που ανιχνεύει την ένταση του ήχου και υπενθυμίζει στους επισκέπτες να διατηρούν τα επίπεδα θορύβου χαμηλά.",
+        dot: { left: "29%", top: "50%" },
+        mapHighlight: { left: "22%", top: "15%", w: "18%", h: "70%" }
+      },
+      3: {
+        title: "3. Η Νίκη της Σαμοθράκης",
+        img: "museum-map.jpg",
+        audio: "room3.mp3",
+        desc: "Εδώ φιλοξενείται το εμβληματικό έκθεμα. Διαθέτει ειδικό μηχανισμό που χαμηλώνει ελεγχόμενα το ύψος του εκθέματος για να είναι εύκολα ορατό από παιδιά, καθώς και εξελιγμένο σύστημα δυναμικής σκίασης.",
+        dot: { left: "50%", top: "50%" },
+        mapHighlight: { left: "39%", top: "15%", w: "19%", h: "70%" }
+      },
+      4: {
+        title: "4. Αισθητηριακή Εμπειρία (Απτική & Ακουστική)",
+        img: "museum-map.jpg",
+        audio: "room4.mp3",
+        desc: "Ένας ειδικά διαμορφωμένος χώρος για άτομα με οπτική αναπηρία. Περιλαμβάνει ακριβή αντίγραφα των εκθεμάτων για εξερεύνηση μέσω της αφής, καθώς και εξειδικευμένα ακουστικά ερεθίσματα που ζωντανεύουν την ιστορία.",
+        dot: { left: "71%", top: "50%" },
+        mapHighlight: { left: "62%", top: "15%", w: "18%", h: "70%" }
+      },
+      5: {
+        title: "5. Υβριδικός Χώρος (Μάθηση & Διάλογος)",
+        img: "museum-map.jpg",
+        audio: "room5.mp3",
+        desc: "Μια αίθουσα διπλής λειτουργίας. Από τη μία πλευρά, ένας ζωντανός παιδότοπος γεμάτος εκπαιδευτικά παιχνίδια και δραστηριότητες για παιδιά. Από την άλλη, ένας σύγχρονος χώρος διαλέξεων και παρουσιάσεων.",
+        dot: { left: "88%", top: "50%" },
+        mapHighlight: { left: "80%", top: "15%", w: "19%", h: "70%" }
+      }
+    };
+
+    /* ── Ticket state ─────────────────────────────────────── */
+    let selectedType = null;
+    let personCount  = 1;
+    const dateInput  = document.getElementById('visit-date');
+    const today      = new Date().toISOString().split('T')[0];
+    dateInput.value  = today;
+
+    /* ── Screen navigation ───────────────────────────────── */
+    function goTo(id) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+
+      // dots only for ticket screens
+      const ticketScreens = ['screen-welcome','screen-info','screen-ticket'];
+      const idx = ticketScreens.indexOf(id);
+      document.getElementById('steps').style.display =
+        (id === 'screen-map' || id === 'screen-room') ? 'none' : 'flex';
+      ['dot-0','dot-1','dot-2'].forEach((d,i) => {
+        const el = document.getElementById(d);
+        el.className = 'step-dot' + (i===idx?' active': i<idx?' done':'');
+      });
+
+      // header subtitle
+      const subs = {
+        'screen-welcome': 'Powered by Husky AI · Scan &amp; Enter',
+        'screen-info'   : 'Powered by Husky AI · Scan &amp; Enter',
+        'screen-ticket' : 'Powered by Husky AI · Scan &amp; Enter',
+        'screen-map'    : 'Powered by Husky AI · Museum Map',
+        'screen-room'   : 'Powered by Husky AI · Room Guide',
+      };
+      document.getElementById('header-sub').innerHTML = subs[id] || '';
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function goToMap() {
+      stopAudio();
+      // Set NFC links
+      const base = window.location.origin + window.location.pathname;
+      for (let i = 1; i <= 5; i++) {
+        document.getElementById('nfc-url-' + i).textContent = base + '#room' + i;
+      }
+      goTo('screen-map');
+      // start NFC silently
+      startNFCSilent();
+    }
+
+    /* ── Check hash on load (NFC direct link) ────────────── */
+    window.addEventListener('load', () => {
+      const hash = window.location.hash;
+      if (hash && hash.match(/^#room[1-5]$/)) {
+        const id = parseInt(hash.replace('#room',''));
+        goTo('screen-map');
+        setTimeout(() => openRoom(id), 200);
+      }
+    });
+
+    /* ── Ticket form ─────────────────────────────────────── */
+    function changeCount(delta) {
+      personCount = Math.max(1, Math.min(99, personCount + delta));
+      document.getElementById('count-display').textContent = personCount;
+      document.getElementById('count-minus').disabled = personCount <= 1;
+      document.getElementById('count-plus').disabled  = personCount >= 99;
+    }
+
+    function selectType(card) {
+      document.querySelectorAll('.choice-card').forEach(c => c.classList.remove('selected'));
+      card.classList.add('selected');
+      selectedType = card.dataset.type;
+      checkForm();
+    }
+
+    function checkForm() {
+      const v = document.getElementById('name').value.trim();
+      if (v) {
+        document.getElementById('name').classList.remove('input-error');
+        document.getElementById('name-error').classList.remove('visible');
+      }
+      document.getElementById('btn-generate').disabled = !(v && selectedType);
+    }
+
+    function generateTicket() {
+      const nameVal = document.getElementById('name').value.trim();
+      if (!nameVal) {
+        document.getElementById('name').classList.add('input-error');
+        document.getElementById('name-error').classList.add('visible');
+        document.getElementById('name').focus();
+        return;
+      }
+      const date = document.getElementById('visit-date').value;
+      const configs = {
+        'adults':                { label:'Adults Only',            panelClass:'scan-red',        badgeClass:'badge-red'        },
+        'children':              { label:'Adults & Children',      panelClass:'scan-blue',       badgeClass:'badge-blue'       },
+        'adults-disabilities':   { label:'Adults & Disabilities',  panelClass:'scan-red-green',  badgeClass:'badge-red-green'  },
+        'children-disabilities': { label:'Children & Disabilities',panelClass:'scan-blue-green', badgeClass:'badge-blue-green' },
+      };
+      const c = configs[selectedType];
+      const passId = 'EQ-' + Math.random().toString(36).substring(2,7).toUpperCase();
+      const [y,m,d] = date.split('-');
+      const fmt = d && m ? `${d}/${m}/${y}` : '—';
+      document.getElementById('t-name').textContent  = nameVal;
+      document.getElementById('t-date').textContent  = fmt;
+      document.getElementById('t-count').textContent = personCount + (personCount===1?' person':' people');
+      document.getElementById('t-id').textContent    = passId;
+      document.getElementById('ticket-badge').textContent = c.label;
+      document.getElementById('scan-panel').className     = 'scan-panel ' + c.panelClass;
+      document.getElementById('ticket-badge').className   = 'ticket-type-badge ' + c.badgeClass;
+      goTo('screen-ticket');
+      if ('wakeLock' in navigator) navigator.wakeLock.request('screen').catch(()=>{});
+    }
+
+    function resetApp() {
+      selectedType = null; personCount = 1;
+      document.querySelectorAll('.choice-card').forEach(c => c.classList.remove('selected'));
+      document.getElementById('btn-generate').disabled = true;
+      document.getElementById('name').value = '';
+      document.getElementById('name').classList.remove('input-error');
+      document.getElementById('name-error').classList.remove('visible');
+      document.getElementById('count-display').textContent = '1';
+      document.getElementById('count-minus').disabled = true;
+      document.getElementById('count-plus').disabled  = false;
+      document.getElementById('visit-date').value = today;
+      goTo('screen-welcome');
+    }
+
+    /* ── NFC ─────────────────────────────────────────────── */
+    let nfcStarted = false;
+
+    async function startNFC() {
+      if (!('NDEFReader' in window)) {
+        setNFCStatus('error', '⚠️', 'NFC not supported', 'This device or browser does not support Web NFC. Use Chrome on Android.');
+        return;
+      }
+      setNFCStatus('scanning', '📡', 'Scanning…', 'Hold your phone near an NFC tag.');
+      document.getElementById('btn-nfc-label').textContent = 'Scanning…';
+      try {
+        const ndef = new NDEFReader();
+        await ndef.scan();
+        nfcStarted = true;
+        ndef.addEventListener('reading', ({ message }) => {
+          for (const record of message.records) {
+            if (record.recordType === 'url') {
+              const url = new TextDecoder().decode(record.data);
+              const m = url.match(/#room([1-5])/);
+              if (m) {
+                openRoom(parseInt(m[1]));
+                return;
+              }
+            }
+          }
+        });
+      } catch (e) {
+        setNFCStatus('error', '⚠️', 'Scan failed', 'Could not start NFC: ' + e.message);
+        document.getElementById('btn-nfc-label').textContent = 'Try Again';
+      }
+    }
+
+    async function startNFCSilent() {
+      if (nfcStarted || !('NDEFReader' in window)) return;
+      try {
+        const ndef = new NDEFReader();
+        await ndef.scan();
+        nfcStarted = true;
+        ndef.addEventListener('reading', ({ message }) => {
+          for (const record of message.records) {
+            if (record.recordType === 'url') {
+              const url = new TextDecoder().decode(record.data);
+              const m = url.match(/#room([1-5])/);
+              if (m) { openRoom(parseInt(m[1])); return; }
+            }
+          }
+        });
+      } catch(e) {}
+    }
+
+    function setNFCStatus(type, icon, title, desc) {
+      const card = document.getElementById('nfc-status-card');
+      card.className = 'nfc-inner' + (type==='scanning'?' scanning': type==='found'?' found':'');
+      document.querySelector('#nfc-status-card .nfc-icon').textContent = icon;
+      document.getElementById('nfc-status-title').textContent = title;
+      document.getElementById('nfc-status-desc').textContent  = desc;
+    }
+
+    /* ── Open room ───────────────────────────────────────── */
+    function openRoom(id) {
+      const r = ROOMS[id];
+      if (!r) return;
+
+      // highlight on map
+      document.querySelectorAll('.room-card').forEach(c => c.classList.remove('active-room'));
+      document.getElementById('rc-' + id).classList.add('active-room');
+
+      // NFC status
+      setNFCStatus('found', '✅', 'Location found!', 'Room ' + id + ' — see your position on the map above.');
+      document.getElementById('btn-nfc-label').textContent = 'Scan NFC Tag';
+
+      // map ring highlight
+      const hl = document.getElementById('map-highlight');
+      const wrap = document.getElementById('map-img-wrap');
+      const rect = document.getElementById('map-main-img').getBoundingClientRect();
+      const wrapRect = wrap.getBoundingClientRect();
+      const mh = r.mapHighlight;
+      // convert % to px relative to wrapper
+      hl.style.left   = mh.left;
+      hl.style.top    = mh.top;
+      hl.style.width  = mh.w;
+      hl.style.height = mh.h;
+      hl.style.display = 'block';
+
+      // populate room screen
+      document.getElementById('rd-img').src   = r.img;
+      document.getElementById('rd-title').textContent = r.title;
+      document.getElementById('rd-desc').textContent  = r.desc;
+
+      // mini-dot
+      const dot = document.getElementById('mini-dot');
+      dot.style.left = r.dot.left;
+      dot.style.top  = r.dot.top;
+
+      // audio
+      const audio = document.getElementById('room-audio');
+      audio.src = r.audio;
+      audio.load();
+      audio.onloadedmetadata = () => {
+        updateAudioUI(audio);
+        audio.play().then(() => {
+          document.getElementById('play-btn').textContent = '⏸';
+        }).catch(() => {});
+      };
+      audio.ontimeupdate = () => updateAudioUI(audio);
+      audio.onended = () => {
+        document.getElementById('play-btn').textContent = '▶';
+        document.getElementById('audio-fill').style.width = '0%';
+      };
+
+      goTo('screen-room');
+    }
+
+    /* ── Audio ───────────────────────────────────────────── */
+    function toggleAudio() {
+      const audio = document.getElementById('room-audio');
+      if (audio.paused) {
+        audio.play();
+        document.getElementById('play-btn').textContent = '⏸';
+      } else {
+        audio.pause();
+        document.getElementById('play-btn').textContent = '▶';
+      }
+    }
+
+    function stopAudio() {
+      const audio = document.getElementById('room-audio');
+      audio.pause();
+      audio.currentTime = 0;
+      document.getElementById('play-btn').textContent = '▶';
+      document.getElementById('audio-fill').style.width = '0%';
+    }
+
+    function updateAudioUI(audio) {
+      if (!audio.duration) return;
+      const pct = (audio.currentTime / audio.duration) * 100;
+      document.getElementById('audio-fill').style.width = pct + '%';
+      const fmt = t => {
+        const m = Math.floor(t / 60);
+        const s = Math.floor(t % 60).toString().padStart(2,'0');
+        return m + ':' + s;
+      };
+      document.getElementById('audio-time').textContent =
+        fmt(audio.currentTime) + ' / ' + fmt(audio.duration);
+    }
+  </script>
+</body>
+</html>
